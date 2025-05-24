@@ -1012,8 +1012,15 @@
             // URL 파라미터 체크 (관리자 모드)
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('admin') === 'true') {
-                toggleAdmin();
-            }
+    setTimeout(() => {
+        const password = prompt('관리자 비밀번호를 입력하세요:');
+        if (password === '1633') {
+            document.getElementById('adminPanel').style.display = 'block';
+        } else {
+            alert('비밀번호가 틀렸습니다.');
+        }
+    }, 1000);
+}
             
             // 통계 업데이트
             updateStats();
