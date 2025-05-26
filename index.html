@@ -823,4 +823,176 @@
                     ⏰ 중지 예약
                 </button>
                 <button class="admin-btn" style="background: #6c757d; color: white;" onclick="resetStats()">
+                        <!-- 쿠폰 모달 -->
+    <div class="coupon-modal" id="couponModal" onclick="closeCoupon(event)">
+        <div class="coupon-content">
+            <h2>🎉 고래패스 혜택 사전신청!</h2>
+            <p style="color: #666; margin: 10px 0;">오픈 예정 - 사전 신청하고 특별 혜택을 받으세요!</p>
+            <button onclick="closeCoupon()" style="margin-top: 20px; padding: 10px 30px; background: #6c757d; color: white; border: none; border-radius: 20px; cursor: pointer;">닫기</button>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        let selectedAvatar = '🐋';
+        let licenseNum = generateLicenseNumber();
+        let serviceEnabled = true;
+
+        // 페이지 로드시 초기화
+        window.onload = function() {
+            updateLicense();
+            generateBarcode();
+            document.getElementById('issueDate').textContent = formatDate(new Date());
+            document.getElementById('expiryDate').textContent = formatDate(getExpiryDate());
+            document.getElementById('licenseNumber').textContent = licenseNum;
+        };
+
+        // 실시간 업데이트 함수
+        function updateLicense() {
+            const name = document.getElementById('name').value || '-';
+            document.getElementById('displayName').textContent = name;
+            
+            const birthdate = document.getElementById('birthdate').value;
+            if (birthdate) {
+                const date = new Date(birthdate);
+                document.getElementById('displayBirth').textContent = formatDate(date);
+            } else {
+                document.getElementById('displayBirth').textContent = '-';
+            }
+            
+            const whaleType = document.getElementById('whaleType').value || '-';
+            document.getElementById('displayWhale').textContent = whaleType;
+            
+            const experience = document.getElementById('experience').value || '-';
+            document.getElementById('displayGrade').textContent = experience;
+            
+            document.getElementById('avatarDisplay').textContent = selectedAvatar;
+        }
+
+        // 아바타 선택
+        function selectAvatar(emoji, element) {
+            selectedAvatar = emoji;
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            updateLicense();
+        }
+
+        // 다운로드 기능
+        function downloadLicense() {
+            const licenseCard = document.querySelector('.license-card');
+            html2canvas(licenseCard, {
+                backgroundColor: '#ffffff',
+                scale: 2
+            }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `울산고래면허증_${document.getElementById('displayName').textContent}_${licenseNum}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('🐋 고래면허증이 저장되었습니다!');
+                });
+            });
+        }
+
+        // SNS 공유
+        function shareToSNS() {
+            const shareText = `🐋 나도 울산 고래면허증 발급 완료!\n지금 바로 발급받기: ${window.location.href}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: '울산 고래면허증',
+                    text: shareText,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('📱 공유 텍스트가 복사되었습니다!');
+                });
+            }
+        }
+
+        // 관리자 모드
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            const isOpen = panel.style.display === 'block';
+            
+            if (!isOpen) {
+                const password = prompt('관리자 비밀번호:');
+                if (password !== '1633') {
+                    alert('비밀번호가 틀렸습니다.');
+                    return;
+                }
+            }
+            
+            panel.style.display = isOpen ? 'none' : 'block';
+        }
+
+        // 쿠폰 모달
+        function showCoupon() {
+            document.getElementById('couponModal').style.display = 'flex';
+        }
+
+        function closeCoupon(event) {
+            if (!event || event.target === document.getElementById('couponModal')) {
+                document.getElementById('couponModal').style.display = 'none';
+            }
+        }
+
+        // 유틸리티 함수들
+        function generateLicenseNumber() {
+            const year = new Date().getFullYear();
+            const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            return `UW-${year}-${random}`;
+        }
+
+        function formatDate(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}.${month}.${day}`;
+        }
+
+        function getExpiryDate() {
+            const today = new Date();
+            return new Date(today.getFullYear() + 5, today.getMonth(), today.getDate());
+        }
+
+        function generateBarcode() {
+            const barcode = document.getElementById('barcode');
+            barcode.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const line = document.createElement('div');
+                line.className = 'barcode-line';
+                line.style.height = (Math.random() * 20 + 20) + 'px';
+                barcode.appendChild(line);
+            }
+        }
+
+        // 서비스 관리 함수들
+        function toggleService() {
+            serviceEnabled = !serviceEnabled;
+            const btn = document.getElementById('serviceToggle');
+            btn.textContent = serviceEnabled ? '🚫 발급 중지' : '✅ 발급 재개';
+            alert(serviceEnabled ? '서비스가 재개되었습니다.' : '서비스가 중지되었습니다.');
+        }
+
+        function scheduleStop() {
+            alert('중지 예약 기능은 개발 중입니다.');
+        }
+
+        function resetStats() {
+            alert('통계가 초기화되었습니다.');
+        }
+
+        function exportData() {
+            alert('데이터 내보내기 기능은 개발 중입니다.');
+        }
+    </script>
+</body>
+</html>
+
                     🔄
