@@ -1376,42 +1376,53 @@ ${Object.entries(stats.whaleTypes).map(([type, count]) =>
             }
         }
         
-        // 다운로드 기능 (이미지로 저장)
-        function downloadLicense() {
-            if (!serviceEnabled) {
-                alert('현재 서비스가 중지되어 발급이 불가능합니다.');
-                return;
-            }
+function downloadLicense() {
+    if (!serviceEnabled) {
+        alert('현재 서비스가 중지되어 발급이 불가능합니다.');
+        return;
+    }
+    
+    recordLicense();
+    
+    const licenseCard = document.querySelector('.license-card');
+    
+    // 모바일 체크
+    if (/mobile|android|iphone/i.test(navigator.userAgent)) {
+        html2canvas(licenseCard, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            logging: false,
+            useCORS: true
+        }).then(canvas => {
+            // 모바일용 다운로드
+            const link = document.createElement('a');
+            link.download = `고래면허증_${document.getElementById('displayName').textContent}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
             
-            // 발급 기록
-            recordLicense();
-            
-            const licenseCard = document.querySelector('.license-card');
-            
-            // html2canvas를 사용하여 이미지로 변환
-            html2canvas(licenseCard, {
-                backgroundColor: '#ffffff',
-                scale: 2, // 고화질을 위해 2배 크기로
-                logging: false,
-                useCORS: true
-            }).then(canvas => {
-                // Canvas를 이미지로 변환
-                canvas.toBlob(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `울산고래면허증_${document.getElementById('displayName').textContent}_${licenseNum}.png`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    
-                    alert('🐋 고래면허증이 이미지로 저장되었습니다! 갤러리에서 확인하세요.');
-                }, 'image/png');
-            }).catch(err => {
-                console.error('이미지 생성 중 오류:', err);
-                // 대체 방법: 텍스트로 저장
-                downloadAsText();
-            });
-        }
+            alert('🐋 고래면허증이 다운로드되었습니다!\n갤러리/다운로드 폴더를 확인하세요.');
+        });
+    } else {
+        // PC용 기존 코드
+        html2canvas(licenseCard, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            logging: false,
+            useCORS: true
+        }).then(canvas => {
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `울산고래면허증_${document.getElementById('displayName').textContent}_${licenseNum}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                alert('🐋 고래면허증이 이미지로 저장되었습니다!');
+            }, 'image/png');
+        });
+    }
+}
         
         // 텍스트 다운로드 (대체 방법)
         function downloadAsText() {
