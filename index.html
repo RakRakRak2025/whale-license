@@ -466,23 +466,28 @@
         }
         
         /* 다운로드 버튼 */
-        .download-section {
-            margin-top: 20px;
-            text-align: center;
-        }
+.download-section {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px; /* 버튼 사이 간격 */
+}
         
         .btn-download {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    margin: 0 10px; /* 버튼 간격 추가 */
+}
         
         .btn-download:hover {
             transform: translateY(-2px);
@@ -494,19 +499,34 @@
         }
         
         /* 반응형 */
-        @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
-            
-            .avatar-selection {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .license-card {
-                transform: none;
-            }
-        }
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .main-container {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        padding: 0; /* 추가 */
+    }
+    
+    .form-section, .license-section {
+        width: 100%;
+        max-width: 100%; /* 수정 */
+        margin: 0 auto; /* 추가 */
+    }
+    
+    .download-section {
+        flex-direction: column; /* 모바일에서 세로 정렬 */
+        gap: 15px;
+    }
+    
+    .btn-download {
+        width: 100%; /* 모바일에서 전체 너비 */
+        margin: 0; /* 모바일에서 마진 제거 */
+    }
+}
         
         /* 관리자 모드 스타일 */
         .admin-panel {
@@ -836,24 +856,15 @@
                 </div>
             </div>
             
-            <div class="download-section">
-                <button class="btn-download" onclick="downloadLicense()">
-                    📥 면허증 다운로드
-    
-<!-- 기존 플로팅 버튼들 삭제하고 이걸로 교체 -->
-<div style="text-align: center; margin-top: 30px;">
-
+           <div class="download-section">
+    <button class="btn-download" onclick="downloadLicense()">
+        📥 면허증 다운로드
+    </button>
+    <!-- 여기에 추가! -->
+    <button class="btn-download" style="background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%);" onclick="window.open('구글폼링크', '_blank')">
+        📝 고래패스 신청하기
+    </button>
 </div>
-
-                    
-    <!-- 여기부터 추가! -->
-    <div style="max-width: 1200px; margin: 30px auto; text-align: center; padding: 0 20px;">
-        <button onclick="window.open('구글폼링크', '_blank')" 
-                class="btn-download" 
-                style="background: #4285f4; width: 280px;">
-            📝 고래패스 신청하기
-        </button>
-    </div>
 <div style="width: 100%; display: flex; justify-content: center; margin: 30px 0;">
     <button onclick="window.open('구글폼링크', '_blank')" 
             style="background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%); 
