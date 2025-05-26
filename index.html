@@ -36,6 +36,9 @@
         .info-value.name { font-size: 20px; font-weight: 700; color: #1e3c72; }
         .license-number { text-align: center; margin-top: 20px; font-size: 18px; font-family: 'Courier New', monospace; letter-spacing: 2px; color: #1e3c72; font-weight: 700; }
         .btn-download { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; }
+        .floating-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+        .float-btn { width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; }
+        .float-btn:hover { transform: scale(1.1); }
         @media (max-width: 768px) { .main-container { flex-direction: column; } }
     </style>
 </head>
@@ -50,17 +53,17 @@
             
             <div class="form-group">
                 <label for="name">이름</label>
-                <input type="text" id="name" placeholder="홍길동">
+                <input type="text" id="name" placeholder="홍길동" oninput="updateLicense()">
             </div>
             
             <div class="form-group">
                 <label for="birthdate">생년월일</label>
-                <input type="date" id="birthdate">
+                <input type="date" id="birthdate" onchange="updateLicense()">
             </div>
             
             <div class="form-group">
                 <label for="whaleType">고래 종류</label>
-                <select id="whaleType">
+                <select id="whaleType" onchange="updateLicense()">
                     <option value="">선택하세요</option>
                     <option value="귀신고래">귀신고래</option>
                     <option value="혹등고래">혹등고래</option>
@@ -72,7 +75,7 @@
             
             <div class="form-group">
                 <label for="experience">고래 운전 목적</label>
-                <select id="experience">
+                <select id="experience" onchange="updateLicense()">
                     <option value="">선택하세요</option>
                     <option value="출퇴근용">출퇴근용 🏢</option>
                     <option value="폭주용">폭주용 🏁</option>
@@ -84,14 +87,14 @@
             <div class="form-group">
                 <label>고래 프로필 선택</label>
                 <div class="avatar-selection">
-                    <div class="avatar-option selected" data-emoji="🐋">🐋</div>
-                    <div class="avatar-option" data-emoji="🐳">🐳</div>
-                    <div class="avatar-option" data-emoji="🐬">🐬</div>
-                    <div class="avatar-option" data-emoji="🦈">🦈</div>
-                    <div class="avatar-option" data-emoji="🌊">🌊</div>
-                    <div class="avatar-option" data-emoji="💙">💙</div>
-                    <div class="avatar-option" data-emoji="✨">✨</div>
-                    <div class="avatar-option" data-emoji="🌙">🌙</div>
+                    <div class="avatar-option selected" onclick="selectAvatar('🐋', this)">🐋</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐳', this)">🐳</div>
+                    <div class="avatar-option" onclick="selectAvatar('🐬', this)">🐬</div>
+                    <div class="avatar-option" onclick="selectAvatar('🦈', this)">🦈</div>
+                    <div class="avatar-option" onclick="selectAvatar('🌊', this)">🌊</div>
+                    <div class="avatar-option" onclick="selectAvatar('💙', this)">💙</div>
+                    <div class="avatar-option" onclick="selectAvatar('✨', this)">✨</div>
+                    <div class="avatar-option" onclick="selectAvatar('🌙', this)">🌙</div>
                 </div>
             </div>
         </div>
@@ -136,26 +139,19 @@
     </div>
 
     <!-- 플로팅 버튼들 -->
-    <div style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100;">
-        <button onclick="showCoupon()" style="width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);" title="쿠폰 받기">
-            🎁
-        </button>
-        <button onclick="toggleAdmin()" style="width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 20px; cursor: pointer; background: #2c3e50; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);" title="관리자">
-            ⚙️
-        </button>
+    <div class="floating-buttons">
+        <button class="float-btn" onclick="showCoupon()" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;" title="쿠폰 받기">🎁</button>
+        <button class="float-btn" onclick="toggleAdmin()" style="background: #2c3e50; color: white; font-size: 20px;" title="관리자">⚙️</button>
     </div>
 
     <script>
         let selectedAvatar = '🐋';
-        
-        // 통계 데이터 관리
         let stats = {
             total: parseInt(localStorage.getItem('totalLicenses') || '0'),
             today: parseInt(localStorage.getItem('todayLicenses') || '0'),
             lastDate: localStorage.getItem('lastDate') || new Date().toDateString()
         };
 
-        // 오늘 날짜 체크 (자정 리셋)
         function checkDate() {
             const today = new Date().toDateString();
             if (stats.lastDate !== today) {
@@ -166,7 +162,6 @@
             }
         }
 
-        // 발급 카운트 증가
         function incrementLicense() {
             checkDate();
             stats.total++;
@@ -176,7 +171,6 @@
             updateStatsDisplay();
         }
 
-        // 통계 표시 업데이트
         function updateStatsDisplay() {
             const totalElement = document.getElementById('totalCount');
             const todayElement = document.getElementById('todayCount');
@@ -184,21 +178,13 @@
             if (todayElement) todayElement.textContent = stats.today;
         }
 
-        // 쿠폰 모달 표시
         function showCoupon() {
-            const modal = document.getElementById('couponModal');
-            if (modal) {
-                modal.style.display = 'flex';
-            } else {
-                alert('🎁 고래패스 쿠폰 이벤트 준비 중입니다!\n\n울산 고래면허증을 SNS에 공유하고\n특별 혜택을 받아보세요!');
-            }
+            alert('🎁 고래패스 쿠폰 이벤트 준비 중입니다!\n\n울산 고래면허증을 SNS에 공유하고\n특별 혜택을 받아보세요!');
         }
 
-        // 관리자 패널 토글
         function toggleAdmin() {
             let panel = document.getElementById('adminPanel');
             if (!panel) {
-                // 관리자 패널이 없으면 생성
                 panel = document.createElement('div');
                 panel.id = 'adminPanel';
                 panel.innerHTML = `
@@ -241,7 +227,6 @@
             updateStatsDisplay();
         }
 
-        // 통계 초기화
         function resetStats() {
             if (confirm('정말로 모든 통계를 초기화하시겠습니까?')) {
                 stats.total = 0;
@@ -253,13 +238,8 @@
             }
         }
 
-        // 통계 내보내기
         function exportStats() {
-            const data = `울산 고래면허증 통계
-생성일: ${new Date().toLocaleString()}
-전체 발급: ${stats.total}건
-오늘 발급: ${stats.today}건`;
-            
+            const data = `울산 고래면허증 통계\n생성일: ${new Date().toLocaleString()}\n전체 발급: ${stats.total}건\n오늘 발급: ${stats.today}건`;
             const blob = new Blob([data], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -268,24 +248,14 @@
             a.click();
             URL.revokeObjectURL(url);
         }
-        
-        // 실시간 업데이트 이벤트
-        document.getElementById('name').addEventListener('input', updateLicense);
-        document.getElementById('birthdate').addEventListener('change', updateLicense);
-        document.getElementById('whaleType').addEventListener('change', updateLicense);
-        document.getElementById('experience').addEventListener('change', updateLicense);
-        
-        // 아바타 선택 이벤트
-        document.querySelectorAll('.avatar-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedAvatar = this.getAttribute('data-emoji');
-                updateLicense();
-            });
-        });
-        
-        // 실시간 업데이트 함수
+
+        function selectAvatar(emoji, element) {
+            selectedAvatar = emoji;
+            document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            updateLicense();
+        }
+
         function updateLicense() {
             document.getElementById('displayName').textContent = document.getElementById('name').value || '-';
             document.getElementById('displayBirth').textContent = document.getElementById('birthdate').value || '-';
@@ -293,19 +263,16 @@
             document.getElementById('displayGrade').textContent = document.getElementById('experience').value || '-';
             document.getElementById('avatarDisplay').textContent = selectedAvatar;
         }
-        
-        // 다운로드 기능 (발급 카운트 추가)
+
         function downloadLicense() {
-            incrementLicense(); // 발급 카운트 증가
-            alert('🐋 고래면허증 다운로드 기능입니다!\n\n발급 완료! 총 ' + stats.total + '번째 면허증입니다.');
+            incrementLicense();
+            alert('🐋 고래면허증 다운로드 완료!\n\n발급 완료! 총 ' + stats.total + '번째 면허증입니다.');
         }
-        
-        // 페이지 로드시 초기화
+
         window.addEventListener('load', function() {
             checkDate();
             updateStatsDisplay();
             updateLicense();
-            console.log('페이지 로드 완료 - 모든 기능 작동 준비!');
         });
     </script>
 </body>
