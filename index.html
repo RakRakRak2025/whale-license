@@ -135,8 +135,139 @@
         </div>
     </div>
 
+    <!-- 플로팅 버튼들 -->
+    <div style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100;">
+        <button onclick="showCoupon()" style="width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);" title="쿠폰 받기">
+            🎁
+        </button>
+        <button onclick="toggleAdmin()" style="width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 20px; cursor: pointer; background: #2c3e50; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);" title="관리자">
+            ⚙️
+        </button>
+    </div>
+
     <script>
         let selectedAvatar = '🐋';
+        
+        // 통계 데이터 관리
+        let stats = {
+            total: parseInt(localStorage.getItem('totalLicenses') || '0'),
+            today: parseInt(localStorage.getItem('todayLicenses') || '0'),
+            lastDate: localStorage.getItem('lastDate') || new Date().toDateString()
+        };
+
+        // 오늘 날짜 체크 (자정 리셋)
+        function checkDate() {
+            const today = new Date().toDateString();
+            if (stats.lastDate !== today) {
+                stats.today = 0;
+                stats.lastDate = today;
+                localStorage.setItem('todayLicenses', '0');
+                localStorage.setItem('lastDate', today);
+            }
+        }
+
+        // 발급 카운트 증가
+        function incrementLicense() {
+            checkDate();
+            stats.total++;
+            stats.today++;
+            localStorage.setItem('totalLicenses', stats.total.toString());
+            localStorage.setItem('todayLicenses', stats.today.toString());
+            updateStatsDisplay();
+        }
+
+        // 통계 표시 업데이트
+        function updateStatsDisplay() {
+            const totalElement = document.getElementById('totalCount');
+            const todayElement = document.getElementById('todayCount');
+            if (totalElement) totalElement.textContent = stats.total;
+            if (todayElement) todayElement.textContent = stats.today;
+        }
+
+        // 쿠폰 모달 표시
+        function showCoupon() {
+            const modal = document.getElementById('couponModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            } else {
+                alert('🎁 고래패스 쿠폰 이벤트 준비 중입니다!\n\n울산 고래면허증을 SNS에 공유하고\n특별 혜택을 받아보세요!');
+            }
+        }
+
+        // 관리자 패널 토글
+        function toggleAdmin() {
+            let panel = document.getElementById('adminPanel');
+            if (!panel) {
+                // 관리자 패널이 없으면 생성
+                panel = document.createElement('div');
+                panel.id = 'adminPanel';
+                panel.innerHTML = `
+                    <div style="position: fixed; top: 0; right: 0; width: 300px; height: 100vh; background: white; box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1000; padding: 20px; overflow-y: auto;">
+                        <h3 style="margin-bottom: 20px;">🐋 관리자 모드</h3>
+                        <button onclick="toggleAdmin()" style="float: right; background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <div style="font-size: 12px; color: #666;">오늘 발급 수</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #2a5298;" id="todayCount">${stats.today}</div>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <div style="font-size: 12px; color: #666;">전체 발급 수</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #2a5298;" id="totalCount">${stats.total}</div>
+                        </div>
+                        
+                        <button onclick="resetStats()" style="width: 100%; padding: 10px; margin-bottom: 10px; border: none; border-radius: 8px; background: #dc3545; color: white; cursor: pointer;">
+                            🔄 통계 초기화
+                        </button>
+                        
+                        <button onclick="exportStats()" style="width: 100%; padding: 10px; border: none; border-radius: 8px; background: #28a745; color: white; cursor: pointer;">
+                            📊 통계 내보내기
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(panel);
+            }
+            
+            const isVisible = panel.style.display === 'block';
+            if (!isVisible) {
+                const password = prompt('관리자 비밀번호를 입력하세요:');
+                if (password !== '1633') {
+                    alert('비밀번호가 틀렸습니다.');
+                    return;
+                }
+            }
+            
+            panel.style.display = isVisible ? 'none' : 'block';
+            updateStatsDisplay();
+        }
+
+        // 통계 초기화
+        function resetStats() {
+            if (confirm('정말로 모든 통계를 초기화하시겠습니까?')) {
+                stats.total = 0;
+                stats.today = 0;
+                localStorage.setItem('totalLicenses', '0');
+                localStorage.setItem('todayLicenses', '0');
+                updateStatsDisplay();
+                alert('통계가 초기화되었습니다.');
+            }
+        }
+
+        // 통계 내보내기
+        function exportStats() {
+            const data = `울산 고래면허증 통계
+생성일: ${new Date().toLocaleString()}
+전체 발급: ${stats.total}건
+오늘 발급: ${stats.today}건`;
+            
+            const blob = new Blob([data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `고래면허증_통계_${new Date().toLocaleDateString()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
         
         // 실시간 업데이트 이벤트
         document.getElementById('name').addEventListener('input', updateLicense);
@@ -163,13 +294,16 @@
             document.getElementById('avatarDisplay').textContent = selectedAvatar;
         }
         
-        // 다운로드 기능
+        // 다운로드 기능 (발급 카운트 추가)
         function downloadLicense() {
-            alert('🐋 고래면허증 다운로드 기능입니다!');
+            incrementLicense(); // 발급 카운트 증가
+            alert('🐋 고래면허증 다운로드 기능입니다!\n\n발급 완료! 총 ' + stats.total + '번째 면허증입니다.');
         }
         
         // 페이지 로드시 초기화
         window.addEventListener('load', function() {
+            checkDate();
+            updateStatsDisplay();
             updateLicense();
             console.log('페이지 로드 완료 - 모든 기능 작동 준비!');
         });
