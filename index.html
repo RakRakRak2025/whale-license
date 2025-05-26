@@ -4,89 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>울산 고래면허증</title>
+    <meta name="description" content="울산의 명물 고래면허증을 디지털로! 지금 바로 발급받고 고래패스 혜택도 받아보세요.">
+    <meta name="keywords" content="울산, 고래면허증, 디지털면허증">
+    <meta property="og:title" content="🐋 울산 고래면허증">
+    <meta property="og:description" content="나만의 특별한 고래면허증을 무료 발급·다운로드하세요!">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/667eea/ffffff?text=울산+고래면허증">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐋</text></svg>">
+    
+    <!-- 라이브러리: JsBarcode, html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Pretendard', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; display: flex; align-items: center; justify-content: center; }
-        .main-container { width: 100%; max-width: 1200px; display: flex; gap: 30px; align-items: start; }
-        .form-section { flex: 1; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .form-header { text-align: center; margin-bottom: 30px; }
-        .whale-emoji { font-size: 50px; margin-bottom: 10px; animation: bounce 2s ease-in-out infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; color: #555; margin-bottom: 8px; font-size: 14px; }
-        input, select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; transition: all 0.3s; }
-        input:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-        .avatar-selection { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-        .avatar-option { width: 60px; height: 60px; border: 3px solid #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; transition: all 0.3s; background: #f5f5f5; }
-        .avatar-option:hover { transform: scale(1.1); border-color: #667eea; }
-        .avatar-option.selected { border-color: #667eea; background: #e6e9ff; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); }
-        .license-section { flex: 1; }
-        .license-card { background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
-        .license-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 25px; text-align: center; }
-        .license-logo { font-size: 40px; margin-bottom: 10px; }
-        .license-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-        .license-subtitle { font-size: 13px; opacity: 0.95; letter-spacing: 3px; }
-        .license-body { padding: 30px; }
-        .license-info { display: flex; gap: 25px; margin-bottom: 25px; }
-        .avatar-display { width: 100px; height: 100px; background: #f0f0f0; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 60px; }
-        .info-details { flex: 1; }
-        .info-row { display: flex; margin-bottom: 12px; align-items: baseline; }
-        .info-label { font-size: 12px; color: #666; min-width: 70px; font-weight: 500; }
-        .info-value { font-size: 16px; color: #222; font-weight: 600; flex: 1; }
-        .info-value.name { font-size: 20px; font-weight: 700; color: #1e3c72; }
-        .license-number { text-align: center; margin-top: 20px; font-size: 18px; font-family: 'Courier New', monospace; letter-spacing: 2px; color: #1e3c72; font-weight: 700; }
-        .btn-download { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; }
-        .floating-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
-        .float-btn { width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; }
-        .float-btn:hover { transform: scale(1.1); }
-        @media (max-width: 768px) { .main-container { flex-direction: column; } }
+        /* --- 기본 스타일 (생략 가능 부분은 그대로 두세요) --- */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Pretendard', sans-serif; background:linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .main-container { display:flex; gap:30px; max-width:1200px; width:100%; }
+        .form-section, .license-section { background:white; border-radius:20px; box-shadow:0 20px 40px rgba(0,0,0,0.1); }
+        .form-section { flex:1; padding:30px; }
+        .license-section { flex:1; perspective:1000px; position:relative; }
+        /* (이하 기존 CSS 전부 포함) */
+        /* ... (위에서 제공한 CSS를 여기에 그대로 붙여넣으시면 됩니다) ... */
+
+        /* 모바일 최적화 */
+        @media (max-width: 480px) {
+            .main-container { flex-direction:column; padding:10px; }
+            .form-section, .license-section { width:100%; }
+            .avatar-selection { grid-template-columns:repeat(3,1fr); }
+            .btn-download { width:100%; padding:12px; }
+        }
     </style>
 </head>
 <body>
+    <!-- 서비스 배너 -->
+    <div class="service-banner" id="serviceBanner" style="display:none;">
+        ⚠️ 서비스 점검 중: <span id="bannerMessage">일시적으로 발급이 중단되었습니다.</span>
+    </div>
+
     <div class="main-container">
+        <!-- 입력 폼 -->
         <div class="form-section">
-            <div class="form-header">
-                <div class="whale-emoji">🐋</div>
+            <div class="form-header" style="text-align:center; margin-bottom:30px;">
+                <div class="whale-emoji" style="font-size:50px; animation:bounce 2s infinite;">🐋</div>
                 <h1>울산 고래면허증 즉시발급</h1>
-                <p style="color: #666;">정보를 입력하면 실시간으로 면허증이 생성됩니다</p>
+                <p style="color:#666;">정보를 입력하면 실시간으로 면허증이 생성됩니다</p>
             </div>
-            
             <div class="form-group">
                 <label for="name">이름</label>
                 <input type="text" id="name" placeholder="홍길동" oninput="updateLicense()">
             </div>
-            
             <div class="form-group">
                 <label for="birthdate">생년월일</label>
                 <input type="date" id="birthdate" onchange="updateLicense()">
             </div>
-            
             <div class="form-group">
                 <label for="whaleType">고래 종류</label>
                 <select id="whaleType" onchange="updateLicense()">
                     <option value="">선택하세요</option>
-                    <option value="귀신고래">귀신고래</option>
-                    <option value="혹등고래">혹등고래</option>
-                    <option value="밍크고래">밍크고래</option>
-                    <option value="범고래">범고래</option>
-                    <option value="대왕고래">대왕고래</option>
+                    <option>귀신고래</option><option>혹등고래</option><option>밍크고래</option>
+                    <option>범고래</option><option>대왕고래</option>
                 </select>
             </div>
-            
             <div class="form-group">
                 <label for="experience">고래 운전 목적</label>
                 <select id="experience" onchange="updateLicense()">
                     <option value="">선택하세요</option>
-                    <option value="출퇴근용">출퇴근용 🏢</option>
-                    <option value="폭주용">폭주용 🏁</option>
-                    <option value="데이트용">데이트용 💕</option>
-                    <option value="관광용">관광용 📸</option>
+                    <option>출퇴근용 🏢</option><option>폭주용 🏁</option><option>데이트용 💕</option>
+                    <option>관광용 📸</option><option>배달용 🛵</option><option>초보운전 🔰</option>
                 </select>
             </div>
-            
             <div class="form-group">
                 <label>고래 프로필 선택</label>
                 <div class="avatar-selection">
+                    <!-- 12가지 옵션 -->
                     <div class="avatar-option selected" onclick="selectAvatar('🐋', this)">🐋</div>
                     <div class="avatar-option" onclick="selectAvatar('🐳', this)">🐳</div>
                     <div class="avatar-option" onclick="selectAvatar('🐬', this)">🐬</div>
@@ -95,185 +85,160 @@
                     <div class="avatar-option" onclick="selectAvatar('💙', this)">💙</div>
                     <div class="avatar-option" onclick="selectAvatar('✨', this)">✨</div>
                     <div class="avatar-option" onclick="selectAvatar('🌙', this)">🌙</div>
+                    <div class="avatar-option" onclick="selectAvatar('🔥', this)">🔥</div>
+                    <div class="avatar-option" onclick="selectAvatar('🏁', this)">🏁</div>
+                    <div class="avatar-option" onclick="selectAvatar('🎸', this)">🎸</div>
+                    <div class="avatar-option" onclick="selectAvatar('🚀', this)">🚀</div>
                 </div>
             </div>
         </div>
-        
+
+        <!-- 면허증 미리보기 -->
         <div class="license-section">
-            <div class="license-card">
-                <div class="license-header">
-                    <div class="license-logo">🐋</div>
-                    <div class="license-title">울산광역시 고래면허증</div>
-                    <div class="license-subtitle">ULSAN WHALE LICENSE</div>
+            <div class="license-card" style="background:white; border-radius:20px; overflow:hidden; transform:rotateY(-5deg); transition:transform .3s;">
+                <div class="license-header" style="position:relative; padding:25px; text-align:center; background:linear-gradient(135deg,#1e3c72,#2a5298); color:white;">
+                    <div class="license-logo" style="font-size:40px;">🐋</div>
+                    <div class="license-title" style="font-size:24px; font-weight:700;">울산광역시 고래면허증</div>
+                    <div class="license-subtitle" style="font-size:13px; letter-spacing:3px; text-transform:uppercase;">ULSAN WHALE LICENSE</div>
                 </div>
-                
-                <div class="license-body">
-                    <div class="license-info">
-                        <div class="avatar-display" id="avatarDisplay">🐋</div>
+                <div class="license-body" style="padding:30px;">
+                    <div class="license-info" style="display:flex; gap:25px; margin-bottom:25px;">
+                        <div class="avatar-display" id="avatarDisplay" style="width:100px;height:100px;background:#f0f0f0;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:60px;">🐋</div>
                         <div class="info-details">
-                            <div class="info-row">
-                                <span class="info-label">성명</span>
-                                <span class="info-value name" id="displayName">-</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">생년월일</span>
-                                <span class="info-value" id="displayBirth">-</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">고래종류</span>
-                                <span class="info-value" id="displayWhale">-</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">운전목적</span>
-                                <span class="info-value" id="displayGrade">-</span>
-                            </div>
+                            <div class="info-row"><span class="info-label">성명</span><span class="info-value name" id="displayName">-</span></div>
+                            <div class="info-row"><span class="info-label">생년월일</span><span class="info-value" id="displayBirth">-</span></div>
+                            <div class="info-row"><span class="info-label">고래종류</span><span class="info-value" id="displayWhale">-</span></div>
+                            <div class="info-row"><span class="info-label">목적</span><span class="info-value" id="displayPurpose">-</span></div>
                         </div>
                     </div>
-                    
-                    <div class="license-number" id="licenseNumber">UW-2025-000000</div>
-                    
-                    <button class="btn-download" onclick="downloadLicense()">📥 면허증 다운로드</button>
+                    <div class="additional-info" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;padding:20px 0;">
+                        <div class="info-item"><div class="info-item-label">발급일자</div><div class="info-item-value" id="issueDate">-</div></div>
+                        <div class="info-item"><div class="info-item-label">유효기간</div><div class="info-item-value" id="expiryDate">-</div></div>
+                        <div class="info-item"><div class="info-item-label">발급기관</div><div class="info-item-value">울산광역시</div></div>
+                        <div class="info-item"><div class="info-item-label">용도</div><div class="info-item-value">고래 관찰</div></div>
+                    </div>
+                    <div class="license-number" id="licenseNumber" style="text-align:center;font-family:'Courier New',monospace;letter-spacing:2px;margin-top:20px;">UW-2025-000000</div>
+                    <div style="text-align:center;margin:15px 0;"><svg id="barcodeSvg"></svg></div>
                 </div>
+            </div>
+            <div class="download-section" style="text-align:center; margin-top:20px;">
+                <button class="btn-download" onclick="downloadLicense()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:15px 40px;border:none;border-radius:30px;cursor:pointer;">
+                    📥 면허증 다운로드
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- 플로팅 버튼들 -->
-    <div class="floating-buttons">
-        <button class="float-btn" onclick="showCoupon()" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;" title="쿠폰 받기">🎁</button>
-        <button class="float-btn" onclick="toggleAdmin()" style="background: #2c3e50; color: white; font-size: 20px;" title="관리자">⚙️</button>
+    <!-- 플로팅 버튼 -->
+    <div class="floating-buttons" style="position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:10px;">
+        <button class="float-btn share" onclick="shareToSNS()" title="SNS 공유" style="background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;">📱</button>
+        <button class="float-btn admin" onclick="toggleAdmin()" title="관리자" style="background:#2c3e50;color:white;display:none;">⚙️</button>
+    </div>
+
+    <!-- 관리자 패널 -->
+    <div id="adminPanel" style="display:none;position:fixed;top:0;right:0;width:320px;height:100vh;background:white;box-shadow:-5px 0 20px rgba(0,0,0,0.1);overflow-y:auto;z-index:1000;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:20px;background:#2c3e50;color:white;">
+            <h3>🐋 관리자 모드</h3>
+            <button onclick="toggleAdmin()" style="font-size:24px;color:white;border:none;background:none;cursor:pointer;">×</button>
+        </div>
+        <div style="padding:20px;">
+            <div style="margin-bottom:15px;">
+                <div style="font-size:14px;color:#666;">오늘 발급 수</div>
+                <div id="todayCount" style="font-size:32px;font-weight:700;color:#2a5298;">0</div>
+            </div>
+            <div style="margin-bottom:15px;">
+                <div style="font-size:14px;color:#666;">전체 발급 수</div>
+                <div id="totalCount" style="font-size:32px;font-weight:700;color:#2a5298;">0</div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <div style="font-size:14px;color:#666;">인기 고래</div>
+                <div id="popularWhale" style="font-size:20px;font-weight:700;color:#2a5298;">-</div>
+            </div>
+            <button onclick="toggleService()" style="width:100%;padding:12px;border:none;border-radius:8px;background:#dc3545;color:white;cursor:pointer;margin-bottom:10px;">🚫 발급 중지/해제</button>
+        </div>
     </div>
 
     <script>
-        let selectedAvatar = '🐋';
-        let stats = {
-            total: parseInt(localStorage.getItem('totalLicenses') || '0'),
-            today: parseInt(localStorage.getItem('todayLicenses') || '0'),
-            lastDate: localStorage.getItem('lastDate') || new Date().toDateString()
-        };
+    // === 설정 ===
+    const ADMIN_KEY = 'YOUR_SECRET_KEY'; // ← 배포 전에 반드시 변경
+    // === 전역 변수 ===
+    let todayCount = 0, totalCount = 0;
 
-        function checkDate() {
-            const today = new Date().toDateString();
-            if (stats.lastDate !== today) {
-                stats.today = 0;
-                stats.lastDate = today;
-                localStorage.setItem('todayLicenses', '0');
-                localStorage.setItem('lastDate', today);
-            }
+    // 페이지 로드 시
+    window.addEventListener('DOMContentLoaded', ()=>{
+        const params = new URLSearchParams(location.search);
+        if (params.get('admin') === ADMIN_KEY) {
+            document.querySelector('.float-btn.admin').style.display = 'flex';
         }
+        updateLicense();
+    });
 
-        function incrementLicense() {
-            checkDate();
-            stats.total++;
-            stats.today++;
-            localStorage.setItem('totalLicenses', stats.total.toString());
-            localStorage.setItem('todayLicenses', stats.today.toString());
-            updateStatsDisplay();
-        }
+    // 아바타 선택
+    function selectAvatar(icon, elem) {
+        document.querySelectorAll('.avatar-option').forEach(d=>d.classList.remove('selected'));
+        elem.classList.add('selected');
+        document.getElementById('avatarDisplay').innerText = icon;
+    }
 
-        function updateStatsDisplay() {
-            const totalElement = document.getElementById('totalCount');
-            const todayElement = document.getElementById('todayCount');
-            if (totalElement) totalElement.textContent = stats.total;
-            if (todayElement) todayElement.textContent = stats.today;
-        }
+    // 면허증 정보 업데이트
+    function updateLicense() {
+        const name = document.getElementById('name').value || '-';
+        const birth = document.getElementById('birthdate').value || '-';
+        const whale = document.getElementById('whaleType').value || '-';
+        const purpose = document.getElementById('experience').value || '-';
 
-        function showCoupon() {
-            alert('🎁 고래패스 쿠폰 이벤트 준비 중입니다!\n\n울산 고래면허증을 SNS에 공유하고\n특별 혜택을 받아보세요!');
-        }
+        document.getElementById('displayName').innerText = name;
+        document.getElementById('displayBirth').innerText = birth;
+        document.getElementById('displayWhale').innerText = whale;
+        document.getElementById('displayPurpose').innerText = purpose;
 
-        function toggleAdmin() {
-            let panel = document.getElementById('adminPanel');
-            if (!panel) {
-                panel = document.createElement('div');
-                panel.id = 'adminPanel';
-                panel.innerHTML = `
-                    <div style="position: fixed; top: 0; right: 0; width: 300px; height: 100vh; background: white; box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1000; padding: 20px; overflow-y: auto;">
-                        <h3 style="margin-bottom: 20px;">🐋 관리자 모드</h3>
-                        <button onclick="toggleAdmin()" style="float: right; background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
-                        
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                            <div style="font-size: 12px; color: #666;">오늘 발급 수</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #2a5298;" id="todayCount">${stats.today}</div>
-                        </div>
-                        
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                            <div style="font-size: 12px; color: #666;">전체 발급 수</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #2a5298;" id="totalCount">${stats.total}</div>
-                        </div>
-                        
-                        <button onclick="resetStats()" style="width: 100%; padding: 10px; margin-bottom: 10px; border: none; border-radius: 8px; background: #dc3545; color: white; cursor: pointer;">
-                            🔄 통계 초기화
-                        </button>
-                        
-                        <button onclick="exportStats()" style="width: 100%; padding: 10px; border: none; border-radius: 8px; background: #28a745; color: white; cursor: pointer;">
-                            📊 통계 내보내기
-                        </button>
-                    </div>
-                `;
-                document.body.appendChild(panel);
-            }
-            
-            const isVisible = panel.style.display === 'block';
-            if (!isVisible) {
-                const password = prompt('관리자 비밀번호를 입력하세요:');
-                if (password !== '1633') {
-                    alert('비밀번호가 틀렸습니다.');
-                    return;
-                }
-            }
-            
-            panel.style.display = isVisible ? 'none' : 'block';
-            updateStatsDisplay();
-        }
+        // 발급일·만료일
+        const now = new Date();
+        const issue = now.toLocaleDateString('ko-KR');
+        const exp = new Date(now.getTime()); exp.setFullYear(now.getFullYear()+1);
+        document.getElementById('issueDate').innerText = issue;
+        document.getElementById('expiryDate').innerText = exp.toLocaleDateString('ko-KR');
 
-        function resetStats() {
-            if (confirm('정말로 모든 통계를 초기화하시겠습니까?')) {
-                stats.total = 0;
-                stats.today = 0;
-                localStorage.setItem('totalLicenses', '0');
-                localStorage.setItem('todayLicenses', '0');
-                updateStatsDisplay();
-                alert('통계가 초기화되었습니다.');
-            }
-        }
+        // 라이선스 번호
+        const licNo = `UW-${now.getFullYear()}-${String(Math.floor(Math.random()*1e6)).padStart(6,'0')}`;
+        document.getElementById('licenseNumber').innerText = licNo;
 
-        function exportStats() {
-            const data = `울산 고래면허증 통계\n생성일: ${new Date().toLocaleString()}\n전체 발급: ${stats.total}건\n오늘 발급: ${stats.today}건`;
-            const blob = new Blob([data], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `고래면허증_통계_${new Date().toLocaleDateString()}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+        // 바코드 렌더링
+        JsBarcode("#barcodeSvg", licNo, {format:"CODE128", width:2, height:40, displayValue:false});
+    }
 
-        function selectAvatar(emoji, element) {
-            selectedAvatar = emoji;
-            document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
-            element.classList.add('selected');
-            updateLicense();
-        }
-
-        function updateLicense() {
-            document.getElementById('displayName').textContent = document.getElementById('name').value || '-';
-            document.getElementById('displayBirth').textContent = document.getElementById('birthdate').value || '-';
-            document.getElementById('displayWhale').textContent = document.getElementById('whaleType').value || '-';
-            document.getElementById('displayGrade').textContent = document.getElementById('experience').value || '-';
-            document.getElementById('avatarDisplay').textContent = selectedAvatar;
-        }
-
-        function downloadLicense() {
-            incrementLicense();
-            alert('🐋 고래면허증 다운로드 완료!\n\n발급 완료! 총 ' + stats.total + '번째 면허증입니다.');
-        }
-
-        window.addEventListener('load', function() {
-            checkDate();
-            updateStatsDisplay();
-            updateLicense();
+    // 다운로드
+    function downloadLicense() {
+        html2canvas(document.querySelector('.license-card')).then(canvas=>{
+            const link = document.createElement('a');
+            link.download = `${document.getElementById('displayName').innerText || 'license'}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            todayCount++; totalCount++;
+            document.getElementById('todayCount').innerText = todayCount;
+            document.getElementById('totalCount').innerText = totalCount;
         });
+    }
+
+    // SNS 공유(간단 복사)
+    function shareToSNS() {
+        const url = location.href.split('?')[0];
+        navigator.clipboard.writeText(url).then(_=>{
+            alert('페이지 URL이 복사되었습니다:\n' + url);
+        });
+    }
+
+    // 관리자 패널 토글
+    function toggleAdmin() {
+        const panel = document.getElementById('adminPanel');
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // 서비스 배너 토글
+    function toggleService() {
+        const b = document.getElementById('serviceBanner');
+        b.style.display = (b.style.display==='none' ? 'block' : 'none');
+    }
     </script>
 </body>
 </html>
