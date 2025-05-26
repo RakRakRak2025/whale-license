@@ -19,28 +19,11 @@
     body {
       font-family: 'Pretendard', sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       padding: 20px;
     }
 
-    /* 서비스 배너 (고정 상단 전체 너비) */
-    .service-banner {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: #ff6b6b;
-      color: white;
-      text-align: center;
-      padding: 12px 0;
-      z-index: 1000;
-      font-size: 14px;
-    }
-
-    /* 컨테이너 */
+    /* 레이아웃 컨테이너 */
     .main-container {
       max-width: 1200px;
       width: 100%;
@@ -48,7 +31,7 @@
       gap: 30px;
       justify-content: center;
       align-items: flex-start;
-      margin-top: 60px; /* 배너 높이 고려 */
+      /* margin-top removed */
     }
 
     /* 입력 폼 */
@@ -60,11 +43,7 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
     .form-header { text-align: center; margin-bottom: 30px; }
-    .whale-emoji {
-      font-size: 50px;
-      animation: bounce 2s ease-in-out infinite;
-      margin-bottom: 10px;
-    }
+    .whale-emoji { font-size: 50px; animation: bounce 2s ease-in-out infinite; margin-bottom: 10px; }
     @keyframes bounce { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-10px);} }
 
     .form-group { margin-bottom: 20px; }
@@ -79,7 +58,7 @@
       box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
     }
 
-    /* 아바타 그리드 중앙 정렬 */
+    /* 아바타 그리드 */
     .avatar-selection {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -144,21 +123,18 @@
     .info-item-value { font-size:14px; color:#2a5298; font-weight:700; }
 
     .license-number { text-align:center; font-family:'Courier New',monospace; letter-spacing:2px; font-size:18px; color:#1e3c72; font-weight:700; margin-top:20px; }
-    /* JsBarcode */
     #barcodeSvg { display:block; margin:15px auto; }
 
     .download-section { text-align:center; margin-top:20px; }
     .btn-download { display:inline-block; background: linear-gradient(135deg,#667eea,#764ba2); color:white; padding:15px 40px; border:none; border-radius:30px; font-size:16px; font-weight:600; cursor:pointer; box-shadow:0 4px 15px rgba(102,126,234,0.3); transition:all 0.3s; }
     .btn-download:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(102,126,234,0.4); }
 
-    /* 플로팅 버튼 */
     .floating-buttons { position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:10px; z-index:1000; }
     .float-btn { width:60px; height:60px; border-radius:50%; border:none; font-size:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(0,0,0,0.2); transition:all 0.3s; }
     .float-btn.coupon { background:linear-gradient(135deg,#f093fb,#f5576c); color:white; }
     .float-btn.share  { background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; }
     .float-btn.admin  { background:#2c3e50; color:white; display:none; }
 
-    /* 관리자 패널 */
     .admin-panel { display:none; position:fixed; top:0; right:0; width:320px; height:100vh; background:white; box-shadow:-5px 0 20px rgba(0,0,0,0.1); z-index:1001; overflow-y:auto; animation:slideIn 0.3s ease-out; }
     @keyframes slideIn { from{transform:translateX(100%);} to{transform:translateX(0);} }
     .admin-header { background:#2c3e50; color:white; padding:20px; display:flex; justify-content:space-between; align-items:center; }
@@ -175,24 +151,23 @@
     .admin-btn.success { background:#28a745; color:white; }
     .admin-btn.success:hover { background:#218838; }
 
-    /* 반응형 */
     @media (max-width: 600px) {
-      .main-container { flex-direction:column; margin-top:80px; }
-      .form-section, .license-section { width:100%; }
+      .main-container { flex-direction:column; }
       .avatar-selection { grid-template-columns:repeat(3,1fr); }
-      .floating-buttons { right:10px; bottom:10px; }
+      .btn-download { width:100%; }
     }
   </style>
 </head>
 <body>
-  <div class="service-banner" id="serviceBanner">⚠️ 서비스 점검 중: 일시적으로 발급이 중단되었습니다.</div>
   <div class="main-container">
+    <!-- 입력 폼 -->
     <div class="form-section">
       <div class="form-header">
         <div class="whale-emoji">🐋</div>
         <h1>울산 고래면허증 즉시발급</h1>
         <p style="color:#666;">정보를 입력하면 실시간으로 면허증이 생성됩니다</p>
       </div>
+      <!-- form inputs -->
       <div class="form-group"><label for="name">이름</label><input id="name" type="text" placeholder="홍길동" oninput="updateLicense()"></div>
       <div class="form-group"><label for="birthdate">생년월일</label><input id="birthdate" type="date" onchange="updateLicense()"></div>
       <div class="form-group"><label for="whaleType">고래 종류</label><select id="whaleType" onchange="updateLicense()"><option value="">선택하세요</option><option>귀신고래</option><option>혹등고래</option><option>밍크고래</option><option>범고래</option><option>대왕고래</option></select></div>
@@ -212,6 +187,8 @@
         <div class="avatar-option" onclick="selectAvatar('🚀',this)">🚀</div>
       </div></div>
     </div>
+
+    <!-- 면허증 미리보기 -->
     <div class="license-section">
       <div class="license-card">
         <div class="license-header">
@@ -243,12 +220,14 @@
       <div class="download-section"><button class="btn-download" onclick="downloadLicense()">📥 면허증 다운로드</button></div>
     </div>
   </div>
-  <!-- 플로팅 버튼 -->
+
+  <!-- 플로팅 버튼들 -->
   <div class="floating-buttons">
     <button class="float-btn coupon" onclick="showCoupon()">🎁</button>
     <button class="float-btn share" onclick="shareToSNS()">📱</button>
     <button class="float-btn admin" id="adminBtn" onclick="toggleAdmin()">⚙️</button>
   </div>
+
   <!-- 관리자 패널 -->
   <div class="admin-panel" id="adminPanel">
     <div class="admin-header"><h3 class="admin-title">🐋 관리자 모드</h3><button class="close-admin" onclick="toggleAdmin()">×</button></div>
@@ -264,23 +243,26 @@
       </div>
     </div>
   </div>
-  <!-- 쿠폰 모달 등 기존 JS 삽입 -->
+
+  <!-- 기존 JS (html2canvas, JsBarcode, 기능별 스크립트) -->
   <script>
-    /* 여기에 기존 JS 전체 붙여넣으세요 */
+    // TODO: 기존 모든 JS 코드를 여기에 붙여넣으세요.
   </script>
+
   <!-- 관리자 노출 제어 -->
   <script>
     const ADMIN_KEY = '1633';
     window.addEventListener('DOMContentLoaded', () => {
-      const p = new URLSearchParams(location.search);
-      if (p.get('admin') === ADMIN_KEY) document.getElementById('adminBtn').style.display = 'flex';
+      const params = new URLSearchParams(location.search);
+      if (params.get('admin') === ADMIN_KEY) {
+        document.getElementById('adminBtn').style.display = 'flex';
+      }
     });
     function toggleAdmin() {
       const panel = document.getElementById('adminPanel');
-      if (panel.style.display === 'block') return panel.style.display = 'none';
+      if (panel.style.display === 'block') { panel.style.display = 'none'; return; }
       const pwd = prompt('관리자 비밀번호를 입력하세요:');
-      if (pwd === ADMIN_KEY) panel.style.display = 'block';
-      else alert('비밀번호가 틀렸습니다.');
+      if (pwd === ADMIN_KEY) panel.style.display = 'block'; else alert('비밀번호가 틀렸습니다.');
     }
   </script>
 </body>
