@@ -508,19 +508,37 @@
         flex-direction: column;
         gap: 20px;
         align-items: center;
-        padding: 0; /* 추가 */
+        width: 100%; /* 추가 */
     }
     
-    .form-section, .license-section {
-        width: 100%;
-        max-width: 100%; /* 수정 */
-        margin: 0 auto; /* 추가 */
+    .form-section {
+        width: 95%; /* 수정 */
+        max-width: 400px;
+        padding: 20px; /* 패딩 줄이기 */
     }
     
-    .download-section {
-        flex-direction: column; /* 모바일에서 세로 정렬 */
-        gap: 15px;
+    .license-section {
+        width: 95%; /* 수정 */
+        max-width: 400px;
     }
+    
+    .license-card {
+        transform: none;
+        margin: 0 auto;
+        width: 100%; /* 추가 */
+    }
+    
+    .avatar-selection {
+        grid-template-columns: repeat(4, 1fr);
+        justify-items: center;
+        gap: 5px; /* 간격 줄이기 */
+    }
+    
+    .avatar-option {
+        width: 50px; /* 크기 줄이기 */
+        height: 50px;
+    }
+}
     
     .btn-download {
         width: 100%; /* 모바일에서 전체 너비 */
