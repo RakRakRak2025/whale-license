@@ -647,6 +647,46 @@
             cursor: pointer;
         }
         
+        /* 보안 관련 CSS */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        img, .license-card, .avatar-option {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+        
+        /* 버튼과 입력 필드는 클릭 가능하도록 */
+        input, select, button, .avatar-option {
+            pointer-events: auto;
+        }
+        
+        /* 개발자도구 감지 시 표시할 경고 */
+        .security-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #ff0000;
+            font-size: 24px;
+            text-align: center;
+            padding-top: 200px;
+            z-index: 9999;
+        }
+        
         /* 반응형 */
         @media (max-width: 768px) {
             body {
@@ -737,6 +777,14 @@
     </style>
 </head>
 <body>
+    <!-- 보안 경고창 -->
+    <div class="security-warning" id="securityWarning">
+        <h1>⚠️ 보안 경고</h1>
+        <p>개발자도구 사용이 감지되었습니다.</p>
+        <p>페이지 접근이 제한됩니다.</p>
+        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; font-size: 16px;">페이지 새로고침</button>
+    </div>
+    
     <div class="service-banner" id="serviceBanner">
         ⚠️ 서비스 점검 중: <span id="bannerMessage">일시적으로 발급이 중단되었습니다.</span>
     </div>
@@ -1004,6 +1052,202 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
+        // ===== 보안 조치 =====
+        
+        // 도메인 체크 (실제 도메인으로 변경하세요)
+        function checkDomain() {
+            const allowedDomains = [
+                'localhost',
+                '127.0.0.1',
+                'your-domain.com',
+                'your-domain.github.io'
+            ];
+            
+            const currentDomain = window.location.hostname;
+            if (!allowedDomains.some(domain => currentDomain.includes(domain))) {
+                document.body.innerHTML = `
+                    <div style="text-align: center; padding: 100px; font-size: 24px; color: red;">
+                        <h1>⚠️ 허가되지 않은 접근</h1>
+                        <p>이 사이트는 ${currentDomain}에서 실행할 수 없습니다.</p>
+                    </div>
+                `;
+                return false;
+            }
+            return true;
+        }
+        
+        // 우클릭 방지
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showSecurityAlert('우클릭이 비활성화되었습니다.');
+            return false;
+        });
+        
+        // 키보드 단축키 차단
+        document.addEventListener('keydown', function(e) {
+            // F12 개발자도구
+            if (e.key === 'F12') {
+                e.preventDefault();
+                showSecurityAlert('개발자도구 접근이 차단되었습니다.');
+                return false;
+            }
+            
+            // Ctrl+Shift+I (개발자도구)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                showSecurityAlert('개발자도구 접근이 차단되었습니다.');
+                return false;
+            }
+            
+            // Ctrl+Shift+J (콘솔)
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+                showSecurityAlert('콘솔 접근이 차단되었습니다.');
+                return false;
+            }
+            
+            // Ctrl+U (소스보기)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                showSecurityAlert('소스보기가 차단되었습니다.');
+                return false;
+            }
+            
+            // Ctrl+S (저장)
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                showSecurityAlert('페이지 저장이 차단되었습니다.');
+                return false;
+            }
+            
+            // Ctrl+A (전체선택)
+            if (e.ctrlKey && e.key === 'a') {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+P (인쇄)
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                showSecurityAlert('인쇄가 차단되었습니다.');
+                return false;
+            }
+        });
+        
+        // 보안 경고 메시지
+        function showSecurityAlert(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff4757;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease-out;
+            `;
+            alertDiv.textContent = message;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+        
+        // 개발자도구 감지
+        let devtools = {
+            open: false,
+            orientation: null
+        };
+        
+        function detectDevTools() {
+            const threshold = 160;
+            const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+            const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+            
+            if (!(heightThreshold && widthThreshold) && 
+                ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || 
+                 widthThreshold || heightThreshold)) {
+                
+                if (!devtools.open) {
+                    devtools.open = true;
+                    document.getElementById('securityWarning').style.display = 'block';
+                    
+                    // 페이지 내용 숨기기
+                    document.querySelector('.main-container').style.display = 'none';
+                    
+                    // 콘솔에 경고 메시지
+                    console.clear();
+                    console.log('%c🚫 경고: 개발자도구 사용이 감지되었습니다!', 
+                        'color: red; font-size: 20px; font-weight: bold;');
+                    console.log('%c이 사이트의 코드는 보호되고 있습니다.', 
+                        'color: red; font-size: 14px;');
+                }
+            } else {
+                if (devtools.open) {
+                    devtools.open = false;
+                    document.getElementById('securityWarning').style.display = 'none';
+                    document.querySelector('.main-container').style.display = 'flex';
+                }
+            }
+        }
+        
+        // 개발자도구 감지 주기적 실행
+        setInterval(detectDevTools, 500);
+        
+        // 콘솔 메시지 오버라이드
+        const originalLog = console.log;
+        console.log = function() {
+            if (arguments[0] && typeof arguments[0] === 'string' && 
+                !arguments[0].includes('🚫') && !arguments[0].includes('Page load time')) {
+                return;
+            }
+            originalLog.apply(console, arguments);
+        };
+        
+        // 마우스 드래그 방지
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // 텍스트 선택 방지 (추가)
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // 이미지 저장 방지
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+            }
+        });
+        
+        // 페이지 blur 시 경고 (개발자도구로 인한 focus 해제 감지)
+        let blurCount = 0;
+        window.addEventListener('blur', function() {
+            blurCount++;
+            if (blurCount > 3) {
+                showSecurityAlert('의심스러운 활동이 감지되었습니다.');
+            }
+        });
+        
+        // 페이지 resize 감지 (개발자도구 열기 감지)
+        let resizeCount = 0;
+        window.addEventListener('resize', function() {
+            resizeCount++;
+            if (resizeCount > 5) {
+                setTimeout(detectDevTools, 100);
+            }
+        });
+        
+        // ===== 기존 코드 =====
+        
         let selectedAvatar = '🐋';
         let licenseNum = generateLicenseNumber();
         let serviceEnabled = true;
