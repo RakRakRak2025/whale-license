@@ -127,12 +127,15 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
-        /* 아바타 선택 - 12개로 확장 */
+        /* 아바타 선택 - 늘어난 개수에 맞춰 조정 */
         .avatar-selection {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 8px;
             margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 5px;
         }
         
         .avatar-option {
@@ -180,8 +183,8 @@
             /* 모바일 운전면허증 사이즈로 변경 */
             width: 320px;
             max-width: 320px;
-            aspect-ratio: 2/3;
-            height: 480px;
+            height: auto; /* 고정 높이 제거 */
+            min-height: 480px; /* 최소 높이만 지정 */
         }
         
         .license-card:hover {
@@ -284,10 +287,9 @@
         /* 면허증 본문 - 컴팩트 */
         .license-body {
             padding: 20px 15px;
-            height: calc(100% - 80px);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 15px;
         }
         
         .license-info {
@@ -399,7 +401,7 @@
             font-weight: 700;
         }
         
-        /* 바코드 효과 - 작게 */
+        /* 바코드 효과 - 테두리 제거 */
         .barcode {
             display: flex;
             justify-content: center;
@@ -408,11 +410,11 @@
             gap: 1px;
             margin: 10px auto;
             width: 140px;
-            background: #f9f9f9;
-            padding: 5px;
-            border-radius: 3px;
-            border: 1px solid #e0e0e0;
-            min-height: 35px; /* 최소 높이 보장 */
+            /* 배경색과 테두리 제거 */
+            background: transparent;
+            padding: 0;
+            border: none;
+            min-height: 35px;
         }
         
         /* 바코드가 없을 때 기본 패턴 표시 */
@@ -865,16 +867,38 @@
                 <label for="whaleType">고래 종류</label>
                 <select id="whaleType" onchange="updateLicense()">
                     <option value="">선택하세요</option>
-                    <option value="귀신고래">귀신고래</option>
+                    <!-- 기존 고래들 -->
+                    <option value="귀신고래">귀신고래 (쇠고래)</option>
                     <option value="혹등고래">혹등고래</option>
                     <option value="밍크고래">밍크고래</option>
                     <option value="범고래">범고래</option>
-                    <option value="대왕고래">대왕고래</option>
+                    <option value="대왕고래">대왕고래 (흰긴수염고래)</option>
                     <option value="향유고래">향유고래</option>
                     <option value="흰수염고래">흰수염고래</option>
                     <option value="긴수염고래">긴수염고래</option>
                     <option value="고양이고래">고양이고래</option>
-                    <option value="우주고래">우주고래</option>
+                    <!-- 실제 고래 종류 추가 -->
+                    <option value="보리고래">보리고래</option>
+                    <option value="북극고래">북극고래</option>
+                    <option value="참고래">참고래</option>
+                    <option value="남방고래">남방고래</option>
+                    <option value="피그미고래">피그미고래</option>
+                    <option value="큰돌고래">큰돌고래</option>
+                    <option value="남방큰돌고래">남방큰돌고래</option>
+                    <option value="참돌고래">참돌고래</option>
+                    <option value="흑등고래">흑등고래</option>
+                    <option value="낫돌고래">낫돌고래</option>
+                    <option value="상괭이">상괭이</option>
+                    <option value="돌고래">돌고래</option>
+                    <option value="쇠돌고래">쇠돌고래</option>
+                    <option value="바다돼지">바다돼지 (쇠돌고래)</option>
+                    <option value="들쇠고래">들쇠고래</option>
+                    <option value="흰고래">흰고래 (벨루가)</option>
+                    <option value="일각고래">일각고래</option>
+                    <option value="긴주둥이고래">긴주둥이고래</option>
+                    <option value="쿠비에부리고래">쿠비에부리고래</option>
+                    <option value="진돌고래">진돌고래</option>
+                    <!-- MZ & 재미있는 고래들 -->
                     <option value="MZ고래">MZ고래 (인싸형)</option>
                     <option value="치킨고래">치킨고래 (야식형)</option>
                     <option value="카페고래">카페고래 (감성형)</option>
@@ -883,6 +907,7 @@
                     <option value="MBTI고래">MBTI고래 (성격형)</option>
                     <option value="힙스터고래">힙스터고래 (트렌드형)</option>
                     <option value="워라밸고래">워라밸고래 (라이프형)</option>
+                    <option value="우주고래">우주고래</option>
                 </select>
             </div>
             
@@ -890,6 +915,7 @@
                 <label for="experience">고래 운전 목적</label>
                 <select id="experience" onchange="updateLicense()">
                     <option value="">선택하세요</option>
+                    <!-- 기존 목적들 -->
                     <option value="출퇴근용">출퇴근용 🏢</option>
                     <option value="폭주용">폭주용 🏁</option>
                     <option value="데이트용">데이트용 💕</option>
@@ -908,6 +934,77 @@
                     <option value="브이로그">브이로그 📹</option>
                     <option value="숏폼촬영">숏폼촬영 🎬</option>
                     <option value="네트워킹">네트워킹 🤝</option>
+                    <!-- 재미있는 새 목적들 대폭 추가 -->
+                    <option value="드라이브스루">드라이브스루 전문 🍟</option>
+                    <option value="도로명상">도로명상 🧘‍♂️</option>
+                    <option value="신호대기마스터">신호대기 마스터 🚦</option>
+                    <option value="주유소순례">주유소 순례 ⛽</option>
+                    <option value="라디오청취">라디오 청취용 📻</option>
+                    <option value="차박캠핑">차박캠핑 🏕️</option>
+                    <option value="아이스크림추격">아이스크림차 추격 🍦</option>
+                    <option value="야경투어">야경투어 🌃</option>
+                    <option value="먹방투어">먹방투어 🍜</option>
+                    <option value="길치극복">길치 극복용 🗺️</option>
+                    <option value="운전연습">운전연습 (엄마옆에서) 👩‍🏫</option>
+                    <option value="세차장순회">세차장 순회 🧽</option>
+                    <option value="드라마OST감상">드라마OST 감상 🎵</option>
+                    <option value="스마트폰충전">스마트폰 충전용 🔌</option>
+                    <option value="에어컨피난">에어컨 피난처 ❄️</option>
+                    <option value="혼자시간">혼자만의 시간 😌</option>
+                    <option value="마트장보기">마트 장보기 🛒</option>
+                    <option value="애완동물동반">애완동물 동반 🐕</option>
+                    <option value="이사전용">이사 전용 📦</option>
+                    <option value="소개팅픽업">소개팅 픽업 💘</option>
+                    <option value="야식배달추격">야식배달 추격 🏃‍♂️</option>
+                    <option value="카페인충전">카페인 충전 투어 ☕</option>
+                    <option value="팟캐스트청취">팟캐스트 청취 🎧</option>
+                    <option value="센치해지고싶을때">센치해지고 싶을 때 🌙</option>
+                    <option value="교통체증회피">교통체증 회피 마스터 🚗</option>
+                    <option value="주말농장">주말농장 🌱</option>
+                    <option value="펜션가는길">펜션 가는 길 🏠</option>
+                    <option value="온천투어">온천투어 ♨️</option>
+                    <option value="벚꽃구경">벚꽃구경 🌸</option>
+                    <option value="단풍구경">단풍구경 🍁</option>
+                    <option value="별보기">별보기 ⭐</option>
+                    <option value="일출보기">일출보기 🌅</option>
+                    <option value="일몰보기">일몰보기 🌇</option>
+                    <option value="바다보러가기">바다보러가기 🌊</option>
+                    <option value="산등반이후하산">산 등반 이후 하산 🏔️</option>
+                    <option value="쇼핑몰탐방">쇼핑몰 탐방 🛍️</option>
+                    <option value="드라이브인영화">드라이브인 영화 🎬</option>
+                    <option value="노래방가는길">노래방 가는 길 🎤</option>
+                    <option value="찜질방투어">찜질방 투어 🛁</option>
+                    <option value="놀이공원">놀이공원 🎡</option>
+                    <option value="캠핑장가는길">캠핑장 가는 길 🏕️</option>
+                    <option value="축제참가">축제 참가 🎪</option>
+                    <option value="콘서트관람">콘서트 관람 🎵</option>
+                    <option value="스포츠관람">스포츠 관람 ⚽</option>
+                    <option value="미술관탐방">미술관 탐방 🎨</option>
+                    <option value="도서관가는길">도서관 가는 길 📚</option>
+                    <option value="병원가는길">병원 가는 길 🏥</option>
+                    <option value="약국들르기">약국 들르기 💊</option>
+                    <option value="은행업무">은행업무 🏦</option>
+                    <option value="관공서방문">관공서 방문 🏛️</option>
+                    <option value="택배픽업">택배 픽업 📦</option>
+                    <option value="반려동물병원">반려동물 병원 🐾</option>
+                    <option value="미용실예약">미용실 예약 💇‍♀️</option>
+                    <option value="네일샵">네일샵 💅</option>
+                    <option value="마사지샵">마사지샵 💆‍♂️</option>
+                    <option value="헬스장">헬스장 💪</option>
+                    <option value="수영장">수영장 🏊‍♀️</option>
+                    <option value="골프연습장">골프연습장 ⛳</option>
+                    <option value="볼링장">볼링장 🎳</option>
+                    <option value="노래연습장">노래연습장 🎤</option>
+                    <option value="PC방">PC방 🖥️</option>
+                    <option value="오락실">오락실 🕹️</option>
+                    <option value="당구장">당구장 🎱</option>
+                    <option value="만화카페">만화카페 📖</option>
+                    <option value="스터디카페">스터디카페 📝</option>
+                    <option value="코인세탁소">코인세탁소 👕</option>
+                    <option value="동네한바퀴">동네 한바퀴 🏘️</option>
+                    <option value="심야드라이브">심야 드라이브 🌃</option>
+                    <option value="새벽운동">새벽운동 🏃‍♂️</option>
+                    <option value="일요일산책">일요일 산책 🚶‍♀️</option>
                 </select>
             </div>
             
