@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>소셜마케팅연구소 | 소셜 마케팅 연구·교육·컨설팅</title>
+    <meta name="description" content="소셜마케팅연구소는 인스타그램, 유튜브, 블로그 등 소셜 채널의 데이터를 분석해 콘텐츠 전략과 마케팅 성과 개선 방법을 연구하고 교육·컨설팅을 제공합니다.">
+    <meta name="keywords" content="소셜마케팅, 소셜미디어 마케팅, SNS 마케팅, 콘텐츠 마케팅, 인스타그램 마케팅, 유튜브 마케팅, 블로그 마케팅, 소셜마케팅연구소">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://YOUR-SITE.netlify.app/">
+
+    <!-- 네이버 서치어드바이저 소유확인: 발급받은 코드를 아래 content에 넣으세요 -->
+    <!-- <meta name="naver-site-verification" content="YOUR_NAVER_CODE"> -->
+    <!-- Google Search Console 소유확인(선택) -->
+    <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_CODE"> -->
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="소셜마케팅연구소">
+    <meta property="og:title" content="소셜마케팅연구소 | 소셜 마케팅 연구·교육·컨설팅">
+    <meta property="og:description" content="데이터로 읽는 소셜 마케팅. 채널 분석, 콘텐츠 전략, 교육과 컨설팅을 제공합니다.">
+    <meta property="og:url" content="https://YOUR-SITE.netlify.app/">
+    <meta property="og:locale" content="ko_KR">
+    <meta name="twitter:card" content="summary">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "소셜마케팅연구소",
+        "url": "https://YOUR-SITE.netlify.app/",
+        "description": "소셜 마케팅 연구, 교육, 컨설팅을 제공하는 연구기관",
+        "email": "contact@example.com"
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --bg: #ffffff;
+            --bg-soft: #f3f6fb;
+            --border: #e5e7eb;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --text: #e5e7eb;
+                --muted: #9ca3af;
+                --bg: #0f172a;
+                --bg-soft: #1e293b;
+                --border: #334155;
+            }
+        }
+        :root[data-theme="dark"] {
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --bg: #0f172a;
+            --bg-soft: #1e293b;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            word-break: keep-all;
+        }
+        .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+        a { color: var(--primary); }
+
+        header.site {
+            position: sticky; top: 0; z-index: 10;
+            background: var(--bg); border-bottom: 1px solid var(--border);
+        }
+        header.site .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .logo { font-weight: 800; color: var(--text); text-decoration: none; font-size: 18px; }
+        nav a { color: var(--muted); text-decoration: none; margin-left: 18px; font-size: 14px; }
+        nav a:hover { color: var(--primary); }
+
+        .hero { padding: 88px 0 72px; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: #fff; }
+        .hero .eyebrow { font-size: 14px; opacity: .85; letter-spacing: .08em; }
+        .hero h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.3; margin: 12px 0 20px; }
+        .hero p { font-size: clamp(16px, 2vw, 18px); max-width: 640px; opacity: .95; }
+        .btn {
+            display: inline-block; margin-top: 28px; padding: 14px 28px; border-radius: 999px;
+            background: #fff; color: var(--primary-dark); font-weight: 700; text-decoration: none;
+        }
+
+        section { padding: 72px 0; }
+        section.soft { background: var(--bg-soft); }
+        h2 { font-size: clamp(22px, 3.5vw, 30px); margin-bottom: 12px; }
+        .lead { color: var(--muted); margin-bottom: 36px; }
+
+        .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+        .card {
+            background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 26px;
+        }
+        .card .icon { font-size: 28px; margin-bottom: 10px; }
+        .card h3 { font-size: 18px; margin-bottom: 8px; }
+        .card p { color: var(--muted); font-size: 15px; }
+
+        .about-box { max-width: 720px; }
+        .about-box p + p { margin-top: 14px; }
+
+        .steps { counter-reset: step; list-style: none; display: grid; gap: 14px; }
+        .steps li {
+            counter-increment: step; display: flex; gap: 14px; align-items: flex-start;
+            padding: 18px 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+        }
+        .steps li::before {
+            content: counter(step); flex: 0 0 32px; height: 32px; border-radius: 50%;
+            background: var(--primary); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center;
+        }
+
+        .contact-box { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+        .contact-box dl { display: grid; grid-template-columns: 90px 1fr; gap: 10px 16px; margin-top: 16px; }
+        .contact-box dt { color: var(--muted); font-size: 14px; }
+        .contact-box dd { font-size: 15px; }
+
+        footer { padding: 32px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+
+        @media (max-width: 640px) {
+            nav a { margin-left: 12px; font-size: 13px; }
+            .hero { padding: 60px 0 52px; }
+            section { padding: 52px 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site">
+        <div class="wrap">
+            <a class="logo" href="#top">소셜마케팅연구소</a>
+            <nav aria-label="주요 메뉴">
+                <a href="#research">연구 분야</a>
+                <a href="#about">소개</a>
+                <a href="#process">진행 방식</a>
+                <a href="#contact">문의</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="top">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="wrap">
+                <p class="eyebrow">SOCIAL MARKETING RESEARCH INSTITUTE</p>
+                <h1 id="hero-title">데이터로 읽는 소셜 마케팅,<br>성과로 증명하는 콘텐츠 전략</h1>
+                <p>소셜마케팅연구소는 인스타그램, 유튜브, 블로그 등 채널별 데이터를 분석해 실제로 반응을 만드는 콘텐츠와 운영 방법을 연구하고, 기업과 개인이 바로 적용할 수 있는 교육과 컨설팅을 제공합니다.</p>
+                <a class="btn" href="#contact">상담 문의하기</a>
+            </div>
+        </section>
+
+        <section id="research" aria-labelledby="research-title">
+            <div class="wrap">
+                <h2 id="research-title">연구 분야</h2>
+                <p class="lead">채널과 목적에 맞춰 측정 가능한 소셜 마케팅 방법을 찾습니다.</p>
+                <div class="grid">
+                    <article class="card">
+                        <div class="icon">📊</div>
+                        <h3>채널 데이터 분석</h3>
+                        <p>조회, 도달, 저장, 공유 등 지표를 정리하고 어떤 콘텐츠가 실제 성과로 이어졌는지 분석합니다.</p>
+                    </article>
+                    <article class="card">
+                        <div class="icon">✍️</div>
+                        <h3>콘텐츠 전략</h3>
+                        <p>타깃 고객의 관심사와 검색 행동을 바탕으로 주제, 포맷, 발행 주기를 설계합니다.</p>
+                    </article>
+                    <article class="card">
+                        <div class="icon">🎯</div>
+                        <h3>캠페인 성과 측정</h3>
+                        <p>캠페인의 목표를 정의하고 성과 지표와 개선 포인트를 함께 도출하는 방법을 연구합니다.</p>
+                    </article>
+                    <article class="card">
+                        <div class="icon">🎓</div>
+                        <h3>교육 · 강의</h3>
+                        <p>실무자와 창업자를 위한 소셜 마케팅 강의와 워크숍을 운영합니다.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="soft" aria-labelledby="about-title">
+            <div class="wrap about-box">
+                <h2 id="about-title">소개</h2>
+                <p class="lead">소셜마케팅연구소를 소개합니다.</p>
+                <p>소셜마케팅연구소는 플랫폼이 바뀌어도 변하지 않는 소셜 마케팅의 원리를 찾기 위해 데이터를 연구합니다. 유행하는 방법을 그대로 따라 하기보다, 왜 반응이 생기는지 확인하고 그 결과를 현장에서 검증할 수 있는 형태로 정리합니다.</p>
+                <p>기업의 마케팅 담당자, 소상공인, 크리에이터 모두가 이해하고 실행할 수 있도록 연구 결과를 쉬운 언어로 공유하는 것을 목표로 합니다.</p>
+            </div>
+        </section>
+
+        <section id="process" aria-labelledby="process-title">
+            <div class="wrap">
+                <h2 id="process-title">진행 방식</h2>
+                <p class="lead">상담부터 결과 공유까지 세 단계로 진행합니다.</p>
+                <ol class="steps">
+                    <li><div><strong>현황 진단</strong><br>현재 운영 중인 채널과 지표를 함께 살펴보고 목표를 정합니다.</div></li>
+                    <li><div><strong>전략 수립과 실행</strong><br>데이터에 근거한 콘텐츠 계획을 세우고 실행을 돕습니다.</div></li>
+                    <li><div><strong>성과 측정과 개선</strong><br>정기적으로 결과를 점검하고 다음 단계의 개선안을 제시합니다.</div></li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="contact" class="soft" aria-labelledby="contact-title">
+            <div class="wrap">
+                <h2 id="contact-title">문의</h2>
+                <p class="lead">교육, 컨설팅, 연구 협력에 관한 문의를 받습니다.</p>
+                <div class="contact-box">
+                    <dl>
+                        <dt>이메일</dt><dd><a href="mailto:contact@example.com">contact@example.com</a></dd>
+                        <dt>전화</dt><dd>000-0000-0000</dd>
+                        <dt>주소</dt><dd>서울특별시 OO구 OO로 00</dd>
+                        <dt>운영시간</dt><dd>평일 10:00 – 18:00 (주말·공휴일 휴무)</dd>
+                    </dl>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="wrap">
+            <p>© 2026 소셜마케팅연구소. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
