@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<!--
+  울산 고래면허증 · 장생포 시즌 에디션 v1 (2026-10-13)
+  changelog: ../index.html 원본 옵션(고래 48 · 운전목적 50 · 프로필 28) 그대로 이식 + 필기시험 3문제 · 등급 뽑기 · 스토리용 이미지 · 장생포 현장 도장 · 매장 제시 화면 추가.
+             발급기관 표기를 '울산광역시' → 맛있는울산(비공식)으로 변경 (기관 사칭 방지).
+  배포 전에 아래 CONFIG 블록만 채우면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>울산 고래면허증 · 30초 발급</title>
+<meta name="description" content="필기 3문제 풀면 30초 만에 나오는 비공식 디지털 고래면허증. 등급은 랜덤.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="울산 고래면허증 · 30초 발급">
+<meta property="og:description" content="축제 초대장은 없어도 고래면허는 딸 수 있다. 필기 3문제, 등급은 랜덤.">
+<!-- 배포 후 절대주소로 바꿔주세요. 예) https://도메인/festival/og.jpg (카톡·인스타 미리보기는 절대주소만 인식) -->
+<meta property="og:image" content="og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#06142e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#06142e; --deep:#0a2350; --sea:#0f4c81; --aqua:#3fd6e6; --foam:#e8f7fb;
+    --coral:#ff7a59; --gold:#ffcf5a; --ink:#0b1f3a; --text:#eaf6ff; --muted:#9cc3dd;
+    --line:rgba(255,255,255,.14); --glass:rgba(255,255,255,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
+  body{
+    min-height:100vh;min-height:100dvh;color:var(--text);
+    font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+    background:var(--navy) radial-gradient(120% 70% at 50% -10%,#174a8a 0%,#0a2350 45%,#06142e 80%) fixed;
+    overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere;
+  }
+  button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+  .t{font-family:"Black Han Sans","Noto Sans KR",sans-serif;font-weight:400;letter-spacing:-.01em}
+
+  /* 배경 물방울 */
+  .sea{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .sea i{position:absolute;bottom:-40px;border:1.5px solid rgba(255,255,255,.18);border-radius:50%;animation:rise linear infinite}
+  @keyframes rise{to{transform:translateY(-115vh) translateX(20px);opacity:0}}
+
+  /* 인앱 브라우저 안내 */
+  .inapp{position:sticky;top:0;z-index:30;display:flex;gap:8px;align-items:center;padding:10px 12px;
+    background:#ffcf5a;color:#2a1d00;font-size:13px;font-weight:700;line-height:1.35}
+  .inapp[hidden]{display:none}
+  .inapp span{flex:1}
+  .inapp button{background:#2a1d00;color:#ffcf5a;border-radius:999px;padding:7px 11px;font-size:12px;white-space:nowrap}
+  .inapp .x{background:none;color:#2a1d00;padding:4px 6px;font-size:16px}
+
+  .wrap{position:relative;z-index:1;max-width:440px;margin:0 auto;padding:20px 16px 8px;overflow-x:clip}
+  .screen{display:none}
+  .screen.active{display:block;animation:up .35s ease both}
+  @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  /* 홈 */
+  .pill{display:inline-block;padding:6px 12px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-size:12px;font-weight:700;color:#bfe6ff}
+  .home{text-align:center;padding-top:8px}
+  .hero{position:relative;width:160px;height:150px;margin:18px auto 4px;display:grid;place-items:center}
+  .hero::before{content:"";position:absolute;inset:14px;border-radius:50%;background:radial-gradient(circle,rgba(63,214,230,.45),transparent 70%);filter:blur(6px);animation:glow 3s ease-in-out infinite}
+  .hero .w{position:relative;font-size:100px;line-height:1;animation:bob 3s ease-in-out infinite}
+  .hero img.w{width:150px;height:auto}
+  @keyframes bob{50%{transform:translateY(-10px) rotate(-3deg)}}
+  @keyframes glow{50%{opacity:.55;transform:scale(1.08)}}
+  .title{font-size:52px;line-height:1.02;margin:6px 0 14px;text-shadow:0 4px 24px rgba(63,214,230,.35)}
+  .title em{font-style:normal;color:var(--aqua)}
+  .story{font-size:15.5px;line-height:1.7;color:#d5ebfb}
+  .story b{color:#fff}
+  .chips{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:18px 0 20px}
+  .chips span{font-size:12.5px;font-weight:700;padding:6px 10px;border-radius:8px;background:rgba(63,214,230,.12);color:var(--aqua)}
+
+  .btn{display:block;width:100%;padding:15px 16px;border-radius:14px;font-size:16px;font-weight:700;
+    background:rgba(255,255,255,.1);border:1px solid var(--line);margin-top:10px;transition:transform .12s}
+  .btn:active{transform:scale(.98)}
+  .btn.primary{background:linear-gradient(135deg,#3fd6e6,#1d8fd8);border:0;color:#04203a;box-shadow:0 10px 28px rgba(29,143,216,.35)}
+  .btn.big{font-size:18px;padding:18px}
+  .btn.gold{background:linear-gradient(135deg,#ffe08a,#f2b233);border:0;color:#3a2600}
+  .btn.ghost{background:none;border:0;color:var(--muted);font-size:14px;font-weight:500;padding:12px}
+  .btn[disabled]{opacity:.6;pointer-events:none}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .row2 .btn{font-size:14.5px}
+
+  .odds{margin-top:22px;padding:14px;border-radius:16px;background:var(--glass);border:1px solid var(--line);text-align:left}
+  .odds h3{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px}
+  .odds li{list-style:none;display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:6px 0;border-top:1px dashed var(--line)}
+  .odds li:first-of-type{border-top:0}
+  .odds b{font-weight:700}
+  .odds small{color:var(--muted);font-size:12px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
+
+  /* 폼 */
+  .step{font-size:12px;font-weight:700;color:var(--aqua);letter-spacing:.04em}
+  h2{font-size:24px;margin:6px 0 18px;line-height:1.35}
+  label{display:block;font-size:14px;font-weight:700;margin:16px 0 8px;color:#d5ebfb}
+  label .opt{font-weight:500;color:var(--muted);font-size:12px;margin-left:4px}
+  input{width:100%;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:rgba(255,255,255,.06);color:#fff;font-size:16px;font-family:inherit}
+  input:focus{outline:none;border-color:var(--aqua);background:rgba(63,214,230,.08)}
+  input::placeholder{color:#6f93ad}
+  input[type=date]{min-height:50px;color-scheme:dark}
+  .shake{animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .avatars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .avatars button{aspect-ratio:1;border-radius:12px;font-size:23px;background:rgba(255,255,255,.06);border:1.5px solid transparent;display:grid;place-items:center}
+  .avatars button[aria-pressed=true]{border-color:var(--aqua);background:rgba(63,214,230,.18);transform:scale(1.06)}
+
+  /* 시험 */
+  .progress{height:6px;border-radius:9px;background:rgba(255,255,255,.1);margin:10px 0 22px;overflow:hidden}
+  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3fd6e6,#ffcf5a);transition:width .35s}
+  .q{font-size:21px}
+  .opts{display:grid;gap:9px}
+  .opts button{text-align:left;padding:16px;border-radius:14px;background:rgba(255,255,255,.07);border:1.5px solid var(--line);font-size:16px;font-weight:500;line-height:1.4}
+  .opts button b{display:inline-block;width:24px;color:var(--aqua)}
+  .opts button.ok{border-color:#3fe68f;background:rgba(63,230,143,.16)}
+  .opts button.no{border-color:#ff7a59;background:rgba(255,122,89,.14)}
+  .feedback{min-height:72px;margin-top:16px;font-size:15px;line-height:1.6;color:#d5ebfb}
+  .feedback b{color:#fff}
+
+  /* 심사 연출 */
+  .overlay{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(4,12,30,.82);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);text-align:center}
+  .overlay[hidden]{display:none}
+  .spin{font-size:64px;animation:spin 1s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .overlay p{margin-top:14px;font-size:18px;font-weight:700}
+
+  /* 결과 */
+  .result-head{text-align:center;margin-bottom:14px}
+  .pass{display:inline-block;font-size:15px;font-weight:900;color:#ff5d4a;border:2.5px solid #ff5d4a;border-radius:8px;padding:2px 10px;transform:rotate(-6deg)}
+  .grade-name{font-size:34px;margin:10px 0 4px}
+  .grade-tag{font-size:13px;font-weight:700;color:var(--muted)}
+  .grade-line{font-size:15px;line-height:1.6;color:#d5ebfb;margin-top:8px}
+  .card-wrap{position:relative;border-radius:16px;margin:16px 0 6px;transform-style:preserve-3d;transition:transform .2s ease-out;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  .card-wrap img{display:block;width:100%;height:auto;border-radius:16px;-webkit-touch-callout:default}
+  .card-wrap .holo{position:absolute;inset:0;border-radius:16px;pointer-events:none;mix-blend-mode:soft-light;opacity:.55;
+    background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.75) 45%,rgba(120,240,255,.6) 50%,rgba(255,200,255,.5) 55%,transparent 70%);
+    background-size:250% 250%;background-position:var(--hx,0%) var(--hy,0%);animation:holo 4s ease-in-out infinite}
+  @keyframes holo{0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}
+  .card-wrap.slam{animation:slam .55s cubic-bezier(.2,1.6,.4,1) both}
+  @keyframes slam{0%{transform:scale(1.08) rotate(-3deg);opacity:0}60%{transform:scale(.97) rotate(.5deg);opacity:1}100%{transform:none}}
+  .save-hint{text-align:center;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .hint{font-size:12.5px;color:var(--muted);text-align:center;margin-top:7px;line-height:1.5}
+  .box{margin-top:18px;padding:16px;border-radius:16px;background:var(--glass);border:1px solid var(--line)}
+  .box h3{font-size:16px;margin-bottom:10px}
+  .box ol{padding-left:20px;font-size:14px;line-height:1.75;color:#d5ebfb}
+  .box p{font-size:13.5px;line-height:1.6;color:#d5ebfb;margin-top:8px}
+  .box .meta{color:var(--gold);font-weight:700}
+  .partners li{list-style:none;padding:9px 0;border-top:1px dashed var(--line);font-size:14px}
+  .partners li:first-child{border-top:0}
+  .partners small{display:block;color:var(--muted);font-size:12px}
+  .partners b{color:var(--gold)}
+
+  /* 모달 */
+  .modal{position:fixed;inset:0;z-index:50;background:rgba(3,9,22,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;gap:12px;text-align:center}
+  .modal[hidden]{display:none}
+  .modal img{max-width:100%;max-height:68vh;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+  .modal p{font-size:15px;font-weight:700}
+  .modal .btn{max-width:360px}
+  .staff{width:100%;max-width:400px}
+  .staff .clock{font-size:46px;color:var(--gold);letter-spacing:.04em;margin-top:6px}
+  .staff .who{font-size:22px;margin-top:4px}
+  .staff .serial{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;color:#bfe6ff;margin-top:4px}
+  .staff .live{height:6px;border-radius:6px;margin:12px 0 4px;background:linear-gradient(90deg,#3fd6e6,#ffcf5a,#ff7a59,#3fd6e6);background-size:300% 100%;animation:live 1.2s linear infinite}
+  @keyframes live{to{background-position:300% 0}}
+
+  .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:60;
+    background:#fff;color:var(--ink);padding:12px 16px;border-radius:12px;font-size:14px;font-weight:700;max-width:calc(100% - 32px);
+    box-shadow:0 10px 30px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.25s;text-align:center;line-height:1.45}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  .confetti{position:fixed;top:-12px;width:9px;height:14px;z-index:45;pointer-events:none;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+
+  footer{position:relative;z-index:1;max-width:440px;margin:28px auto 0;padding:18px 16px calc(28px + env(safe-area-inset-bottom));
+    font-size:11.5px;line-height:1.7;color:#7fa3bd;text-align:center;border-top:1px solid var(--line)}
+  footer b{color:#a9c8dd}
+
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="sea" id="sea" aria-hidden="true"></div>
+
+<div class="inapp" id="inappBar" hidden>
+  <span>📸 인스타·카톡 안에서는 저장이 막힐 수 있어요. 이미지를 꾹 눌러 저장하거나 외부 브라우저로 열어주세요.</span>
+  <button type="button" id="btnExternal">외부로 열기</button>
+  <button type="button" class="x" id="btnInappClose" aria-label="안내 닫기">✕</button>
+</div>
+
+<main class="wrap">
+  <!-- 홈 -->
+  <section class="screen active home" id="sHome">
+    <span class="pill">비공식 · 장생포 시즌 한정</span>
+    <div class="hero" id="hero"><span class="w">🐋</span></div>
+    <h1 class="title t">울산<br><em>고래면허증</em></h1>
+    <p class="story">
+      고래축제가 올해 서른 살이 됐대요.<br>
+      근데 고래면허증은 초대를 못 받았어요.<br>
+      <b>서운해서 그냥 여기서 발급합니다.</b>
+    </p>
+    <div class="chips"><span>필기 3문제</span><span>30초 컷</span><span>등급은 랜덤</span></div>
+    <button type="button" class="btn primary big" id="btnStart">면허 시험 보러 가기</button>
+    <button type="button" class="btn" id="btnMine" hidden>내 면허증 다시 보기</button>
+    <div class="odds">
+      <h3>이번 시즌 등급표</h3>
+      <ul id="oddsList"></ul>
+    </div>
+  </section>
+
+  <!-- 응시원서 -->
+  <section class="screen" id="sForm">
+    <div class="step">STEP 1 / 2 · 응시원서</div>
+    <h2 class="t">응시원서 작성</h2>
+    <label for="inName">이름 <span class="opt">닉네임도 돼요</span></label>
+    <input id="inName" maxlength="10" placeholder="예) 장생포불주먹" autocomplete="off" enterkeyhint="done">
+    <label for="inBirth">생년월일 <span class="opt">선택 · 안 쓰면 '비공개'</span></label>
+    <input id="inBirth" type="date" min="1920-01-01" max="2026-12-31">
+    <label id="avatarLabel">증명사진 고르기</label>
+    <div class="avatars" id="avatars" role="group" aria-labelledby="avatarLabel"></div>
+    <button type="button" class="btn primary" id="btnQuiz">필기시험 시작</button>
+    <button type="button" class="btn ghost" data-go="sHome">처음으로</button>
+  </section>
+
+  <!-- 필기시험 -->
+  <section class="screen" id="sQuiz">
+    <div class="step" id="qStep">STEP 2 / 2 · 필기시험</div>
+    <div class="progress"><i id="qBar"></i></div>
+    <h2 class="q t" id="qText"></h2>
+    <div class="opts" id="qOpts"></div>
+    <div class="feedback" id="qFeed" aria-live="polite"></div>
+  </section>
+
+  <!-- 결과 -->
+  <section class="screen" id="sResult">
+    <div class="result-head">
+      <span class="pass">합격</span>
+      <div class="grade-name t" id="gradeName"></div>
+      <div class="grade-tag" id="gradeTag"></div>
+      <p class="grade-line" id="gradeLine"></p>
+    </div>
+    <div class="card-wrap" id="cardWrap"><img id="cardImg" alt="발급된 고래면허증"><span class="holo"></span></div>
+    <p class="save-hint">이미지를 꾹 누르면 바로 저장돼요</p>
+
+    <button type="button" class="btn primary" id="btnStory">📲 스토리용 이미지 저장</button>
+    <div class="row2">
+      <button type="button" class="btn" id="btnCard">면허증만 저장</button>
+      <button type="button" class="btn" id="btnShare">친구한테 보내기</button>
+    </div>
+
+    <button type="button" class="btn gold" id="btnGeo">📍 장생포 현장 도장 받기</button>
+    <p class="hint" id="geoHint"></p>
+
+    <div class="box" id="partnerBox" hidden>
+      <h3>🍽️ 면허증 보여주면 혜택 주는 곳</h3>
+      <ul class="partners" id="partnerList"></ul>
+      <button type="button" class="btn gold" id="btnStaff">매장 직원에게 보여주기</button>
+    </div>
+
+    <div class="box" id="eventBox" hidden>
+      <h3>🎁 면허 인증 이벤트</h3>
+      <ol>
+        <li>위에서 <b>스토리용 이미지 저장</b></li>
+        <li>인스타 스토리나 피드에 올리면서 <b id="evAccount"></b> 태그</li>
+        <li><b id="evTags"></b> 달면 응모 끝</li>
+      </ol>
+      <p class="meta" id="evMeta"></p>
+      <button type="button" class="btn" id="btnInsta">인스타 계정 보러 가기</button>
+    </div>
+
+    <button type="button" class="btn ghost" id="btnRetry">재시험 보기 (등급 다시 뽑기)</button>
+  </section>
+</main>
+
+<footer>
+  이 면허증은 재미로 만든 <b>비공식 디지털 굿즈</b>예요. 울산광역시·남구청·울산고래축제와는 관계없고,
+  실제 신분증이나 자격증으로 쓸 수 없어요.<br>
+  <span id="privacyNote">입력한 이름과 생일은 서버로 보내지 않고 이 기기에만 저장돼요.</span><br>
+  © 2026 맛있는울산 · 울산 고래면허증
+</footer>
+
+<div class="overlay" id="judging" hidden><div><span class="spin">🐋</span><p id="judgeText">채점 중이에요…</p></div></div>
+
+<div class="modal" id="imgModal" hidden role="dialog" aria-modal="true" aria-label="이미지 저장">
+  <p>👇 이미지를 꾹 눌러서 저장하세요</p>
+  <img id="modalImg" alt="저장할 고래면허증 이미지">
+  <a class="btn" id="modalDown" download>파일로 다운로드</a>
+  <button type="button" class="btn ghost" data-close>닫기</button>
+</div>
+
+<div class="modal" id="staffModal" hidden role="dialog" aria-modal="true" aria-label="매장 제시용 화면">
+  <div class="staff">
+    <p style="color:var(--muted);font-size:13px">직원 확인용 · 시계가 움직이면 진짜 면허예요</p>
+    <div class="clock t" id="staffClock">00:00:00</div>
+    <div class="live"></div>
+    <img id="staffImg" alt="제시용 고래면허증" style="width:100%;margin-top:10px">
+    <div class="who t" id="staffWho"></div>
+    <div class="serial" id="staffSerial"></div>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:8px" id="staffRule"></p>
+  </div>
+  <button type="button" class="btn ghost" data-close>닫기</button>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* =================== CONFIG — 배포 전에 여기만 채우세요 =================== */
+const CONFIG = {
+  ISSUER: '맛있는울산 고래면허과',          // 카드 '발급처' 표기 (실제 기관명 쓰지 말 것)
+  SHOW_URL: '',                              // 스토리 이미지에 찍힐 주소. 비우면 현재 주소 자동 (예: '맛있는울산.xyz')
+  HASHTAGS: '#고래면허증 #장생포 #울산고래축제',
+  STORY_HEADLINE: ['축제 초대장은 없어도', '고래면허는 땄다'],
+  EDITION: '2026 장생포 시즌 에디션',
+  GEO: { lat: 35.4990, lng: 129.3860, radiusKm: 3, label: '장생포' }, // 고래박물관 부근. 카카오맵에서 좌표 한 번 확인 권장
+  EVENT: {                                   // account를 채우면 이벤트 박스가 보여요
+    account: '',                             // 예) '@tasty_ulsan'
+    prize: '',                               // 예) '추첨 30명 · 울산 로컬 간식 세트'
+    until: '',                               // 예) '10월 25일(일)까지'
+  },
+  PARTNERS: [                                // 한 곳이라도 넣으면 '혜택 매장' 박스가 보여요
+    // { name: '가게이름', area: '장생포 / 도보 5분', perk: '음료 사이즈업' },
+  ],
+  PARTNER_RULE: '혜택은 1인 1회 · 매장별 수량 소진 시 종료',
+  HERO_IMG: '',                              // 고래 캐릭터 PNG 주소를 넣으면 이모지 대신 사용
+  GAS_URL: '',                               // (선택) 발급 집계용 GAS 웹앱 URL. 이름·생일은 안 보냄
+  GA_ID: ''                                  // (선택) GA4 측정 ID 'G-XXXX'
+};
+/* ======================================================================= */
+
+/* 원본(index.html) 옵션 그대로 */
+const WHALES = ["귀신고래","혹등고래","밍크고래","범고래","대왕고래","향유고래","흰수염고래","긴수염고래","고양이고래","보리고래","북극고래","참고래","남방고래","피그미고래","큰돌고래","남방큰돌고래","참돌고래","흑등고래","낫돌고래","상괭이","돌고래","쇠돌고래","바다돼지","들쇠고래","흰고래","일각고래","긴주둥이고래","쿠비에부리고래","진돌고래","베어드부리고래","스테인거부리고래","긴부리참돌고래","큰머리돌고래","갈색돌고래","북태평양참돌고래","둥근머리돌고래","흰배돌고래","점박이돌고래","줄무늬돌고래","MZ고래","치킨고래","카페고래","게임고래","숏폼고래","MBTI고래","힙스터고래","워라밸고래","우주고래"];
+const PURPOSES = ["출퇴근용 🏢","폭주용 🏁","데이트용 💕","관광용 📸","배달용 🛵","초보운전 🔰","바다횡단 🌊","인스타용 📱","치맥투어 🍗","카공용 ☕","힐링드라이브 🌸","핫플탐방 🔥","울산바위구경 🪨","태화강국가정원 🌸","장생포고래마을 🐋","울산대교건너기 🌉","현대자동차견학 🚗","삼산동맛집투어 🍽️","간절곶일출 🌅","드라이브스루 전문 🍟","도로명상 🧘‍♂️","신호대기 마스터 🚦","주유소 순례 ⛽","라디오 청취용 📻","차박캠핑 🏕️","아이스크림차 추격 🍦","야경투어 🌃","먹방투어 🍜","길치 극복용 🗺️","운전연습 (엄마옆에서) 👩‍🏫","세차장 순회 🧽","드라마OST 감상 🎵","스마트폰 충전용 🔌","에어컨 피난처 ❄️","혼자만의 시간 😌","마트 장보기 🛒","애완동물 동반 🐕","이사 전용 📦","소개팅 픽업 💘","야식배달 추격 🏃‍♂️","카페인 충전 투어 ☕","팟캐스트 청취 🎧","센치해지고 싶을 때 🌙","교통체증 회피 마스터 🚗","동네 한바퀴 🏘️","심야 드라이브 🌃","새벽운동 🏃‍♂️","SK에너지 냄새 맡기 🏭","성남동 카페거리 ☕","반구대 암각화 보기 🗿"];
+const AVATARS = ["🐋","🐳","🐬","🦈","🌊","💙","🔥","⚡","✨","🌙","🌟","🏁","🎸","🚀","🦭","🌈","👑","🎯","🎮","☕","🍗","📱","🎭","🎨","🎵","📚","🏆","🎪"];
+
+/* 등급별로 나오는 고래 (모두 원본 목록 안에서) */
+const BIG   = ["귀신고래","혹등고래","밍크고래","대왕고래","향유고래","흰수염고래","긴수염고래","보리고래","북극고래","참고래","남방고래"];
+const RARE  = BIG.concat(["범고래","일각고래","흰고래","들쇠고래","긴주둥이고래","쿠비에부리고래","베어드부리고래","스테인거부리고래"]);
+const SMALL = ["상괭이","쇠돌고래","바다돼지","고양이고래","피그미고래","낫돌고래","점박이돌고래","줄무늬돌고래","흰배돌고래","참돌고래","돌고래"];
+const MEME  = ["MZ고래","치킨고래","카페고래","게임고래","숏폼고래","MBTI고래","힙스터고래","워라밸고래","우주고래"];
+
+const GRADES = [
+  { id:'legend', name:'고래 1종 대형', tag:'LEGEND', p:3,  color:'#d9a21b', pool:BIG,
+    line:'대왕고래까지 몰 수 있어요. 장생포 앞바다에서 길 막히면 당당하게 비켜달라고 하세요.' },
+  { id:'hidden', name:'무초대 특별면허', tag:'HIDDEN', p:5, color:'#7b5cff', pool:MEME,
+    line:'초대장 없이도 어디든 헤엄쳐 들어갈 수 있는 면허. 사실 이 면허증 만든 사람들 얘기예요.' },
+  { id:'rare',   name:'고래 1종 보통', tag:'RARE',   p:14, color:'#e0563b', pool:RARE,
+    line:'웬만한 고래는 다 몰 수 있어요. 범고래만 조심하세요. 걔네 성격 있어요.' },
+  { id:'normal', name:'고래 2종 보통', tag:'NORMAL', p:38, color:'#1d8fd8', pool:WHALES,
+    line:'무난하게 다 됩니다. 주말 장생포 정체 구간만 알아서 피하세요.' },
+  { id:'small',  name:'고래 2종 소형', tag:'NORMAL', p:28, color:'#139e94', pool:SMALL,
+    line:'작다고 무시하면 안 돼요. 상괭이 생각보다 빨라요.' },
+  { id:'shrimp', name:'원동기 (새우)', tag:'꽝',     p:12, color:'#7d8b99', pool:['새우 (고래 승급 대기)'],
+    line:'고래는 아직이고 새우부터 시작합니다. 내년 축제 전까지 승급 노려보세요.' }
+];
+const PERFECT_BONUS = 3; // 필기 만점이면 1종 대형 확률 +3%p (2종 보통에서 차감)
+
+const CONDITIONS = ['물 밖 주행 금지','장생포 진입 시 꼬리 인사 필수','보호자(돌고래) 동승 시에만','태화강 역주행 금지','신호 대기 중 물 뿜기 금지','멀미약 상시 휴대','간절곶 일출 때만 과속 허용','배고플 땐 운전 금지','초음파 경적은 하루 3번까지','울산대교는 밑으로만 통과','주말엔 잠수 우회 허용','야간엔 반짝이 지느러미 착용'];
+
+const QUIZ = [
+  { q:'장생포 앞바다, 고래 한 마리가 깜빡이도 안 켜고 끼어들었다. 올바른 대처는?',
+    o:['초음파로 경적 한 번 울린다','일단 영상부터 찍는다','고래니까 양보한다','나도 같이 끼어든다'], a:2,
+    why:'바다에선 덩치 큰 쪽이 우선이에요. 몸무게 차이를 생각하세요.' },
+  { q:'운전하다가 배가 너무 고파졌다. 가장 안전한 방법은?',
+    o:['근처 맛집으로 회항한다','크릴새우로 대충 때운다','꾹 참고 목적지까지 간다','옆 고래한테 나눠달라고 한다'], a:0,
+    why:'배고픈 운전은 진짜 위험해요. 맛집 회항은 합법입니다.' },
+  { q:'면허를 받았다. 제일 먼저 할 일은?',
+    o:['지갑에 고이 넣어둔다','부모님께 전화드린다','바로 바다로 출발한다','스토리에 자랑한다'], a:3,
+    why:'아무도 안 보면 면허 딴 거 아닙니다. 스토리 업로드까지가 시험이에요.' }
+];
+
+/* =================== 유틸 =================== */
+const $ = id => document.getElementById(id);
+const UA = navigator.userAgent || '';
+const IN_APP = /Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|NAVER\(inapp|Line\/|DaumApps|everytimeApp|Snapchat|Twitter/i.test(UA);
+const IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(UA) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(UA));
+const STORE_KEY = 'whaleLicense.fest.v1';
+const FT = '"Black Han Sans","Noto Sans KR",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji"';
+const FB = '"Noto Sans KR","Apple SD Gothic Neo",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji"';
+const FE = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+const FM = 'ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace';
+
+function hash(str){ let h = 2166136261 >>> 0; for (let i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const pickOf = (arr, r) => arr[Math.floor(r() * arr.length) % arr.length];
+function fmtDate(d){ d = new Date(d); return d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0'); }
+function store(v){ try { v ? localStorage.setItem(STORE_KEY, JSON.stringify(v)) : localStorage.removeItem(STORE_KEY); } catch (e) {} }
+function load(){ try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { return null; } }
+let toastTimer;
+function toast(msg, ms){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), ms || 2600); }
+function track(name, params){ try { if (window.gtag) gtag('event', name, params || {}); } catch (e) {} }
+function serviceUrl(){ return location.origin + location.pathname.replace(/index\.html$/, ''); }
+function showUrl(){ return CONFIG.SHOW_URL || (location.host + location.pathname.replace(/index\.html$/, '')).replace(/\/$/, ''); }
+function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+async function ensureFonts(text){
+  if (!document.fonts || !document.fonts.load) return;
+  const jobs = [`40px "Black Han Sans"`, `400 40px "Noto Sans KR"`, `700 40px "Noto Sans KR"`].map(f => document.fonts.load(f, text).catch(() => {}));
+  await Promise.race([Promise.all(jobs), wait(4000)]);
+}
+
+/* =================== 상태 =================== */
+let S = { name:'', birth:'', avatar:'🐋', answers:[], correct:0, onsite:false, issuedAt:null };
+let R = null;              // 계산된 결과
+let exportsCache = {};     // 공유용 미리 만든 파일
+let qIndex = 0, qLocked = false;
+
+function computeResult(){
+  const r = rng(hash([S.name, S.birth, S.avatar, S.answers.join('')].join('|')));
+  const bonus = S.correct === QUIZ.length ? PERFECT_BONUS : 0;
+  const roll = r() * 100;
+  let acc = 0, grade = GRADES[GRADES.length - 1];
+  for (const g of GRADES){
+    const p = g.id === 'legend' ? g.p + bonus : g.id === 'normal' ? g.p - bonus : g.p;
+    acc += p;
+    if (roll < acc){ grade = g; break; }
+  }
+  const whale = pickOf(grade.pool, r);
+  const purpose = pickOf(PURPOSES, r);
+  const cond = pickOf(CONDITIONS, r);
+  const serial = 'UW-2026-' + String(Math.floor(r() * 1000000)).padStart(6, '0');
+  const issued = new Date(S.issuedAt || Date.now());
+  const expiry = new Date(issued.getFullYear() + 5, issued.getMonth(), issued.getDate());
+  return { grade, whale, purpose, cond, serial, score: 10 + S.correct * 30, issued, expiry };
+}
+
+/* =================== 카드 그리기 (캔버스 한 곳에서만) =================== */
+function rr(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function fit(ctx, text, family, weight, size, maxW){ let s = size; do { ctx.font = `${weight} ${s}px ${family}`; if (ctx.measureText(text).width <= maxW) break; s -= 1; } while (s > 8); return s; }
+function wrapLines(ctx, text, maxW){ const out = []; let line = ''; for (const w of text.split(' ')){ const t = line ? line + ' ' + w : w; if (ctx.measureText(t).width > maxW && line){ out.push(line); line = w; } else line = t; } if (line) out.push(line); return out; }
+
+function stamp(ctx, cx, cy, rad, color, rot, top, mid, bot){
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.globalAlpha = .88;
+  ctx.strokeStyle = color; ctx.fillStyle = color;
+  ctx.lineWidth = rad * .085; ctx.beginPath(); ctx.arc(0, 0, rad, 0, Math.PI * 2); ctx.stroke();
+  ctx.lineWidth = rad * .03; ctx.beginPath(); ctx.arc(0, 0, rad * .8, 0, Math.PI * 2); ctx.stroke();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if (top){ ctx.font = `700 ${rad * .2}px ${FB}`; ctx.fillText(top, 0, -rad * .42); }
+  ctx.font = `${rad * (top ? .44 : .62)}px ${FT}`; ctx.fillText(mid, 0, top ? rad * .03 : 0);
+  if (bot){ ctx.font = `700 ${rad * .17}px ${FB}`; ctx.fillText(bot, 0, rad * .46); }
+  ctx.restore();
+}
+
+function drawCard(ctx, X, Y, W, withShadow){
+  const u = W / 1000, H = 630 * u, g = R.grade;
+  ctx.save(); ctx.translate(X, Y);
+  if (withShadow){ ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 40 * u; ctx.shadowOffsetY = 18 * u; rr(ctx, 0, 0, W, H, 34 * u); ctx.fillStyle = '#dff2f9'; ctx.fill(); ctx.restore(); }
+  rr(ctx, 0, 0, W, H, 34 * u); ctx.save(); ctx.clip();
+  let bg = ctx.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#f6fcff'); bg.addColorStop(1, '#d3eef8');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  // 물결 무늬
+  ctx.lineWidth = 2 * u;
+  for (let k = 0; k < 7; k++){
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += 8 * u){ const y = H * .5 + k * 24 * u + Math.sin(x / (55 * u) + k * .9) * 7 * u; x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.strokeStyle = 'rgba(29,143,216,.09)'; ctx.stroke();
+  }
+  // 워터마크 고래
+  ctx.save(); ctx.globalAlpha = .08; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.font = `${300 * u}px ${FE}`; ctx.fillText('🐋', W + 20 * u, H - 30 * u); ctx.restore();
+  // 헤더 띠
+  let hg = ctx.createLinearGradient(0, 0, W, 0); hg.addColorStop(0, '#0a2350'); hg.addColorStop(1, '#0f5a8f');
+  ctx.fillStyle = hg; ctx.fillRect(0, 0, W, 112 * u);
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.fillStyle = '#fff';
+  ctx.font = `${50 * u}px ${FT}`; ctx.fillText('울산 고래면허증', 36 * u, 50 * u);
+  ctx.font = `700 ${16 * u}px ${FB}`; ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('ULSAN WHALE LICENSE  ·  UNOFFICIAL  ·  재미로 만든 비공식 면허', 38 * u, 88 * u);
+  // 등급 배지
+  ctx.font = `${30 * u}px ${FT}`; const gw = ctx.measureText(g.name).width + 44 * u;
+  rr(ctx, W - 36 * u - gw, 26 * u, gw, 58 * u, 29 * u); ctx.fillStyle = g.color; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 2 * u; ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(g.name, W - 36 * u - gw / 2, 56 * u);
+  // 증명사진
+  const px = 36 * u, py = 140 * u, pw = 220 * u, ph = 276 * u;
+  rr(ctx, px, py, pw, ph, 22 * u); let pg = ctx.createLinearGradient(0, py, 0, py + ph); pg.addColorStop(0, '#ffffff'); pg.addColorStop(1, '#e6f6fb');
+  ctx.fillStyle = pg; ctx.fill(); ctx.strokeStyle = '#a9d6e6'; ctx.lineWidth = 3 * u; ctx.stroke();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `${148 * u}px ${FE}`; ctx.fillStyle = '#000'; ctx.fillText(S.avatar, px + pw / 2, py + ph / 2 + 8 * u);
+  ctx.font = `700 ${21 * u}px ${FB}`; ctx.fillStyle = '#2f6385'; ctx.fillText(`필기 ${R.score}점 · 합격`, px + pw / 2, py + ph + 30 * u);
+  // 정보
+  const ix = 290 * u, vx = ix + 118 * u, maxV = W - vx - 36 * u;
+  const rows = [
+    ['성명', S.name || '무명고래', 'name'],
+    ['생년월일', S.birth ? fmtDate(S.birth) : '비공개'],
+    ['고래종류', R.whale],
+    ['운전목적', R.purpose],
+    ['조건', R.cond]
+  ];
+  rows.forEach((row, i) => {
+    const y = 168 * u + i * 60 * u;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.font = `700 ${19 * u}px ${FB}`; ctx.fillStyle = '#5b7a93'; ctx.fillText(row[0], ix, y);
+    ctx.fillStyle = '#0b1f3a';
+    if (row[2] === 'name'){ fit(ctx, row[1], FT, 400, 44 * u, maxV); }
+    else { fit(ctx, row[1], FB, 700, 27 * u, i === 4 ? Math.min(maxV, 470 * u) : maxV); }
+    ctx.fillText(row[1], vx, y);
+    if (i < rows.length - 1){ ctx.fillStyle = 'rgba(11,31,58,.08)'; ctx.fillRect(ix, y + 30 * u, W - ix - 36 * u, 1.5 * u); }
+  });
+  // 하단
+  ctx.fillStyle = 'rgba(11,31,58,.14)'; ctx.fillRect(36 * u, 462 * u, W - 72 * u, 2 * u);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#5b7a93'; ctx.font = `700 ${17 * u}px ${FB}`; ctx.fillText('면허번호', 36 * u, 496 * u);
+  ctx.fillStyle = '#0a2350'; ctx.font = `700 ${34 * u}px ${FM}`; ctx.fillText(R.serial, 36 * u, 536 * u);
+  ctx.fillStyle = '#2f5677'; fit(ctx, `발급 ${fmtDate(R.issued)} · 유효 ${fmtDate(R.expiry)} · ${CONFIG.ISSUER}`, FB, 500, 18 * u, 590 * u);
+  ctx.fillText(`발급 ${fmtDate(R.issued)} · 유효 ${fmtDate(R.expiry)} · ${CONFIG.ISSUER}`, 36 * u, 584 * u);
+  // 바코드
+  const br = rng(hash(R.serial)); let bx = W - 36 * u - 290 * u; const bEnd = W - 36 * u; ctx.fillStyle = '#0b1f3a';
+  while (bx < bEnd){ const bw = (2 + Math.floor(br() * 4)) * u; ctx.fillRect(bx, 482 * u, Math.min(bw, bEnd - bx), 66 * u); bx += bw + (2 + Math.floor(br() * 3)) * u; }
+  ctx.textAlign = 'right'; ctx.fillStyle = '#5b7a93'; ctx.font = `700 ${15 * u}px ${FB}`; ctx.fillText(CONFIG.EDITION, W - 36 * u, 576 * u);
+  // 홀로그램 (레전드·히든)
+  if (g.id === 'legend' || g.id === 'hidden'){
+    ctx.save(); ctx.globalAlpha = .16; let hl = ctx.createLinearGradient(0, 0, W, H);
+    ['#ff8bd1','#8be9ff','#fff38b','#9dff8b','#b38bff'].forEach((c, i, a) => hl.addColorStop(i / (a.length - 1), c));
+    ctx.fillStyle = hl; ctx.fillRect(0, 0, W, H); ctx.restore();
+  }
+  // 도장
+  stamp(ctx, px + pw - 64 * u, py + ph - 62 * u, 52 * u, '#e0453a', -.24, null, '합격');
+  if (S.onsite) stamp(ctx, W - 118 * u, 392 * u, 74 * u, '#c99312', .18, CONFIG.GEO.label, '현장발급', fmtDate(S.onsiteAt || Date.now()));
+  ctx.restore();
+  // 테두리
+  rr(ctx, 0, 0, W, H, 34 * u); ctx.lineWidth = (g.id === 'legend' || g.id === 'hidden' ? 8 : 3) * u;
+  ctx.strokeStyle = g.id === 'legend' ? '#e8b730' : g.id === 'hidden' ? '#8f74ff' : 'rgba(10,35,80,.25)'; ctx.stroke();
+  ctx.restore();
+}
+
+function cardText(){ return ['울산 고래면허증 ULSAN WHALE LICENSE UNOFFICIAL 재미로 만든 비공식 면허 성명 생년월일 고래종류 운전목적 조건 면허번호 발급 유효 필기 점 합격 현장발급 비공개 무명고래 0123456789.·',
+  S.name, R.grade.name, R.whale, R.purpose, R.cond, CONFIG.ISSUER, CONFIG.EDITION, CONFIG.GEO.label].join(''); }
+
+function cardCanvas(W){ const c = document.createElement('canvas'); c.width = W; c.height = Math.round(W * .63); drawCard(c.getContext('2d'), 0, 0, W, false); return c; }
+
+function storyCanvas(){
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1920; const ctx = c.getContext('2d'); const g = R.grade;
+  let bg = ctx.createLinearGradient(0, 0, 0, 1920); bg.addColorStop(0, '#061733'); bg.addColorStop(.5, '#0d3d72'); bg.addColorStop(1, '#0a6f8f');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, 1080, 1920);
+  const br = rng(hash(R.serial + 'b'));
+  for (let i = 0; i < 26; i++){ ctx.beginPath(); ctx.arc(br() * 1080, br() * 1920, 6 + br() * 34, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 3; ctx.stroke(); }
+  // 아래 파도
+  ctx.fillStyle = 'rgba(63,214,230,.16)'; ctx.beginPath(); ctx.moveTo(0, 1920);
+  for (let x = 0; x <= 1080; x += 12) ctx.lineTo(x, 1770 + Math.sin(x / 90) * 22); ctx.lineTo(1080, 1920); ctx.fill();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  // 상단 라벨
+  ctx.font = `700 32px ${FB}`; const lt = '비공식 · 장생포 시즌 한정'; const lw = ctx.measureText(lt).width + 56;
+  rr(ctx, 540 - lw / 2, 226, lw, 66, 33); ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.fill(); ctx.fillStyle = '#cfeeff'; ctx.fillText(lt, 540, 260);
+  // 헤드라인
+  ctx.fillStyle = '#ffffff'; fit(ctx, CONFIG.STORY_HEADLINE[0], FT, 400, 88, 960); ctx.fillText(CONFIG.STORY_HEADLINE[0], 540, 362);
+  ctx.fillStyle = g.id === 'legend' ? '#ffd45e' : '#66ecf7'; fit(ctx, CONFIG.STORY_HEADLINE[1], FT, 400, 104, 960); ctx.fillText(CONFIG.STORY_HEADLINE[1], 540, 470);
+  // 카드
+  drawCard(ctx, 60, 560, 960, true);
+  // 등급
+  ctx.font = `${58}px ${FT}`; const gl = `${g.name} · ${g.tag}`; const gw = ctx.measureText(gl).width + 70;
+  rr(ctx, 540 - gw / 2, 1228, gw, 96, 48); ctx.fillStyle = g.color; ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillText(gl, 540, 1278);
+  ctx.font = `500 34px ${FB}`; ctx.fillStyle = '#d6ecff';
+  wrapLines(ctx, g.line, 900).slice(0, 2).forEach((ln, i) => ctx.fillText(ln, 540, 1384 + i * 50));
+  // CTA
+  ctx.font = `700 36px ${FB}`; ctx.fillStyle = '#ffffff'; ctx.fillText('나도 30초 만에 발급받기 👇', 540, 1520);
+  ctx.fillStyle = '#66ecf7'; fit(ctx, showUrl(), FT, 400, 54, 960); ctx.fillText(showUrl(), 540, 1584);
+  ctx.font = `500 30px ${FB}`; ctx.fillStyle = '#9fd0ee'; fit(ctx, CONFIG.HASHTAGS, FB, 500, 30, 960); ctx.fillText(CONFIG.HASHTAGS, 540, 1644);
+  return c;
+}
+
+/* =================== 화면 =================== */
+function go(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id)); window.scrollTo(0, 0); }
+
+function allText(){ return cardText() + CONFIG.STORY_HEADLINE.join('') + CONFIG.HASHTAGS + showUrl() + R.grade.line + R.grade.tag + '나도 30초 만에 발급받기 비공식 장생포 시즌 한정'; }
+
+async function renderResult(animate){
+  await ensureFonts(allText());
+  const g = R.grade;
+  $('gradeName').textContent = g.name; $('gradeName').style.color = g.id === 'shrimp' ? '#c9d4de' : lighten(g.color);
+  $('gradeTag').textContent = `${g.tag} · 확률 ${g.id === 'legend' && S.correct === QUIZ.length ? g.p + PERFECT_BONUS : g.p}%`;
+  $('gradeLine').textContent = g.line;
+  $('cardImg').src = cardCanvas(1400).toDataURL('image/png');
+  $('cardImg').alt = `${S.name}님의 고래면허증 · ${g.name} · ${R.whale}`;
+  updateGeoUI();
+  go('sResult');
+  if (animate){
+    const w = $('cardWrap'); w.classList.remove('slam'); void w.offsetWidth; w.classList.add('slam');
+    try { navigator.vibrate && navigator.vibrate([30, 40, 80]); } catch (e) {}
+    if (g.id === 'legend' || g.id === 'hidden') confetti(g.id === 'legend' ? ['#ffd45e','#fff1b8','#e8b730','#ffffff'] : ['#8f74ff','#c9b8ff','#66ecf7','#ffffff']);
+  }
+  setTimeout(prepareExports, 700);
+}
+function lighten(hex){ const n = parseInt(hex.slice(1), 16); const f = c => Math.round(c + (255 - c) * .35); return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`; }
+
+let exportToken = 0;
+async function prepareExports(){
+  const token = ++exportToken; exportsCache = {};
+  const name = S.name || '무명';
+  for (const kind of ['story', 'card']){
+    const c = kind === 'story' ? storyCanvas() : cardCanvas(2000);
+    const fname = `고래면허증_${name}${kind === 'story' ? '_스토리' : ''}.png`;
+    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+    if (token !== exportToken) return;   // 그 사이 카드가 바뀌었으면 버림
+    exportsCache[kind] = { canvas: c, blob, fname, file: blob && typeof File === 'function' ? new File([blob], fname, { type: 'image/png' }) : null };
+  }
+}
+
+function showImage(url, fname){
+  $('modalImg').src = url; $('modalDown').href = url; $('modalDown').download = fname;
+  $('modalDown').hidden = IN_APP; $('imgModal').hidden = false;
+}
+
+async function saveImage(kind){
+  track('save_' + kind, { grade: R.grade.id });
+  let x = exportsCache[kind];
+  // 미리 만든 파일이 있으면 바로 공유 시트 (iOS는 탭 직후에 호출해야 열림)
+  if (x && x.file && !IN_APP && IS_MOBILE && navigator.canShare && navigator.canShare({ files: [x.file] })){
+    try { await navigator.share({ files: [x.file] }); return; }
+    catch (e){ if (e && e.name === 'AbortError') return; }
+  }
+  if (!x){ const c = kind === 'story' ? storyCanvas() : cardCanvas(2000); x = { canvas: c, fname: `고래면허증_${S.name || '무명'}${kind === 'story' ? '_스토리' : ''}.png` }; }
+  const url = x.canvas.toDataURL('image/png');
+  if (IN_APP || IS_MOBILE) return showImage(url, x.fname);
+  const a = document.createElement('a'); a.href = url; a.download = x.fname; document.body.appendChild(a); a.click(); a.remove();
+  toast('저장했어요! 스토리에 올려주세요 🐋');
+}
+
+async function shareLink(){
+  const text = `나 ${R.grade.name} 나옴 🐋 너도 30초 만에 따봐`;
+  track('share_link', { grade: R.grade.id });
+  if (navigator.share && !IN_APP){ try { await navigator.share({ title: '울산 고래면허증', text, url: serviceUrl() }); return; } catch (e){ if (e && e.name === 'AbortError') return; } }
+  copyText(text + '\n' + serviceUrl());
+}
+function copyText(t){
+  const done = () => toast('링크 복사했어요. 단톡방에 붙여넣기!');
+  if (navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(done, () => fallbackCopy(t, done)); }
+  else fallbackCopy(t, done);
+}
+function fallbackCopy(t, done){ const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e){ toast('복사가 안 돼요. 주소창 링크를 직접 복사해주세요'); } ta.remove(); }
+
+/* 현장 도장 */
+function km(a, b, c, d){ const R0 = 6371, t = x => x * Math.PI / 180; const dl = t(c - a), dg = t(d - b); const h = Math.sin(dl / 2) ** 2 + Math.cos(t(a)) * Math.cos(t(c)) * Math.sin(dg / 2) ** 2; return 2 * R0 * Math.asin(Math.sqrt(h)); }
+function updateGeoUI(){
+  const b = $('btnGeo');
+  if (S.onsite){ b.textContent = `✅ ${CONFIG.GEO.label} 현장발급 도장 완료`; b.disabled = true; $('geoHint').textContent = '현장에서 받은 금도장은 저장 이미지에도 그대로 찍혀요.'; }
+  else { b.textContent = `📍 ${CONFIG.GEO.label} 현장 도장 받기`; b.disabled = false; $('geoHint').textContent = `${CONFIG.GEO.label} 근처(${CONFIG.GEO.radiusKm}km 안)에서 누르면 '현장발급' 금도장이 찍혀요.`; }
+}
+function checkGeo(){
+  if (!navigator.geolocation){ toast('이 브라우저는 위치 확인이 안 돼요'); return; }
+  const b = $('btnGeo'); b.disabled = true; b.textContent = '위치 확인 중…';
+  navigator.geolocation.getCurrentPosition(pos => {
+    const d = km(pos.coords.latitude, pos.coords.longitude, CONFIG.GEO.lat, CONFIG.GEO.lng);
+    if (d <= CONFIG.GEO.radiusKm){
+      S.onsite = true; S.onsiteAt = Date.now(); store(S); track('onsite_stamp', { grade: R.grade.id }); logIssue('onsite');
+      renderResult(true).then(() => toast('쾅! 현장발급 금도장 찍혔어요 🟡'));
+    } else {
+      updateGeoUI(); toast(`지금 ${CONFIG.GEO.label}에서 ${d < 10 ? d.toFixed(1) : Math.round(d)}km 떨어져 있어요. 가까이 와서 다시 눌러주세요!`, 3600);
+    }
+  }, err => {
+    updateGeoUI(); toast(err && err.code === 1 ? '위치 권한을 허용해야 도장을 받을 수 있어요' : '위치를 못 찾았어요. 잠시 후 다시 눌러주세요', 3200);
+  }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+}
+
+/* 매장 제시 화면 */
+let clockTimer;
+function openStaff(){
+  $('staffImg').src = $('cardImg').src; $('staffWho').textContent = `${S.name} · ${R.grade.name}`; $('staffSerial').textContent = R.serial;
+  $('staffRule').textContent = CONFIG.PARTNER_RULE;
+  const tick = () => { const d = new Date(); $('staffClock').textContent = [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2, '0')).join(':'); };
+  tick(); clearInterval(clockTimer); clockTimer = setInterval(tick, 1000);
+  $('staffModal').hidden = false; track('staff_view', { grade: R.grade.id });
+}
+
+/* 집계 (선택) — 이름·생일은 보내지 않음 */
+function logIssue(kind){
+  if (!CONFIG.GAS_URL) return;
+  try {
+    fetch(CONFIG.GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'issue', source: 'festival', kind, grade: R.grade.id, whale: R.whale, onsite: !!S.onsite, ts: new Date().toISOString() }) }).catch(() => {});
+  } catch (e) {}
+}
+
+function confetti(colors){
+  for (let i = 0; i < 40; i++){
+    const s = document.createElement('i'); s.className = 'confetti';
+    s.style.left = Math.random() * 100 + 'vw'; s.style.background = colors[i % colors.length];
+    s.style.animationDuration = (1.6 + Math.random() * 1.6) + 's'; s.style.animationDelay = (Math.random() * .4) + 's';
+    document.body.appendChild(s); setTimeout(() => s.remove(), 3800);
+  }
+}
+
+/* 필기시험 */
+function renderQ(){
+  const q = QUIZ[qIndex]; qLocked = false;
+  $('qStep').textContent = `STEP 2 / 2 · 필기시험 ${qIndex + 1}/${QUIZ.length}`;
+  $('qBar').style.width = (qIndex / QUIZ.length * 100) + '%';
+  $('qText').textContent = `Q${qIndex + 1}. ${q.q}`;
+  $('qFeed').innerHTML = '';
+  const box = $('qOpts'); box.innerHTML = '';
+  q.o.forEach((txt, j) => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = `<b>${'①②③④'[j]}</b>`; b.appendChild(document.createTextNode(txt));
+    b.onclick = () => answer(j, b); box.appendChild(b);
+  });
+}
+function answer(j, btn){
+  if (qLocked) return; qLocked = true;          // 연타 방지
+  const q = QUIZ[qIndex], ok = j === q.a;
+  S.answers[qIndex] = j; if (ok) S.correct++;
+  btn.classList.add(ok ? 'ok' : 'no');
+  if (!ok) $('qOpts').children[q.a].classList.add('ok');
+  $('qFeed').innerHTML = (ok ? '<b>⭕ 정답!</b> ' : '<b>❌ 땡!</b> 근데 떨어진 사람은 아직 없어요. ') + q.why;
+  $('qBar').style.width = ((qIndex + 1) / QUIZ.length * 100) + '%';
+  setTimeout(() => { qIndex++; qIndex < QUIZ.length ? renderQ() : finishQuiz(); }, ok ? 1300 : 1900);
+}
+async function finishQuiz(){
+  $('judging').hidden = false; $('judgeText').textContent = '채점 중이에요…';
+  setTimeout(() => { $('judgeText').textContent = '면허 심사 중…'; }, 700);
+  S.issuedAt = Date.now(); R = computeResult(); store(S);
+  await Promise.all([wait(1400), ensureFonts(allText())]);
+  $('judging').hidden = true;
+  track('license_issued', { grade: R.grade.id, perfect: S.correct === QUIZ.length });
+  logIssue('issue');
+  renderResult(true);
+}
+function startQuiz(){
+  const name = $('inName').value.trim();
+  if (!name){ const i = $('inName'); i.classList.remove('shake'); void i.offsetWidth; i.classList.add('shake'); i.focus(); toast('이름(닉네임)부터 적어주세요'); return; }
+  S.name = name; S.birth = $('inBirth').value || '';
+  S.answers = []; S.correct = 0; qIndex = 0;
+  go('sQuiz'); renderQ();
+}
+
+/* =================== 초기화 =================== */
+(function init(){
+  // 카드·스토리에 쓰는 글자 미리 받아두기 (시험 보는 동안 로딩 끝남)
+  ensureFonts('울산 고래면허증 ULSAN WHALE LICENSE UNOFFICIAL 재미로 만든 비공식 면허 성명 생년월일 고래종류 운전목적 조건 면허번호 발급 유효 필기 점 합격 현장발급 비공개 0123456789.·'
+    + GRADES.map(g => g.name + g.tag + g.line).join('') + WHALES.join('') + PURPOSES.join('') + CONDITIONS.join('') + CONFIG.STORY_HEADLINE.join('') + CONFIG.HASHTAGS + CONFIG.ISSUER + CONFIG.EDITION + '나도 30초 만에 발급받기 장생포 시즌 한정 새우 승급 대기');
+  // 배경 물방울
+  const sea = $('sea');
+  for (let i = 0; i < 12; i++){ const b = document.createElement('i'); const s = 6 + Math.random() * 22; b.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s}px;animation-duration:${9 + Math.random() * 10}s;animation-delay:${-Math.random() * 15}s`; sea.appendChild(b); }
+  if (CONFIG.HERO_IMG){ $('hero').innerHTML = ''; const im = new Image(); im.className = 'w'; im.alt = '고래 캐릭터'; im.src = CONFIG.HERO_IMG; $('hero').appendChild(im); }
+
+  // 등급표
+  $('oddsList').innerHTML = GRADES.map(g => `<li><span><i class="dot" style="background:${g.color}"></i><b>${g.name}</b></span><small>${g.tag} · ${g.p}%${g.id === 'legend' ? ' (필기 만점이면 ' + (g.p + PERFECT_BONUS) + '%)' : ''}</small></li>`).join('');
+
+  // 프로필
+  const av = $('avatars');
+  AVATARS.forEach((e, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = e; b.setAttribute('aria-label', '프로필 ' + e);
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.onclick = () => { S.avatar = e; av.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); };
+    av.appendChild(b);
+  });
+
+  // 인앱 브라우저
+  if (IN_APP) $('inappBar').hidden = false;
+  $('btnInappClose').onclick = () => { $('inappBar').hidden = true; };
+  $('btnExternal').onclick = () => {
+    const url = location.href;
+    if (/KAKAOTALK/i.test(UA)) location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
+    else if (/Android/i.test(UA)) location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+    else toast('오른쪽 위 ··· 를 누르고 "외부 브라우저에서 열기"를 눌러주세요', 4200);
+  };
+
+  // 이벤트 · 제휴 매장
+  if (CONFIG.EVENT.account){
+    $('eventBox').hidden = false; $('evAccount').textContent = CONFIG.EVENT.account; $('evTags').textContent = CONFIG.HASHTAGS;
+    $('evMeta').textContent = [CONFIG.EVENT.prize, CONFIG.EVENT.until].filter(Boolean).join(' · ');
+    $('btnInsta').onclick = () => { track('open_insta'); window.open('https://instagram.com/' + CONFIG.EVENT.account.replace(/^@/, ''), '_blank'); };
+  }
+  if (CONFIG.PARTNERS.length){
+    $('partnerBox').hidden = false;
+    const ul = $('partnerList');
+    CONFIG.PARTNERS.forEach(p => { const li = document.createElement('li'); li.innerHTML = '<b></b> <span></span><small></small>'; li.children[0].textContent = p.perk; li.children[1].textContent = ' · ' + p.name; li.children[2].textContent = p.area || ''; ul.appendChild(li); });
+    $('btnStaff').onclick = openStaff;
+  }
+  if (CONFIG.GAS_URL) $('privacyNote').textContent = '이름과 생일은 이 기기에만 저장돼요. 발급 통계를 위해 등급·고래 종류만 집계해요.';
+
+  // GA4 (선택)
+  if (CONFIG.GA_ID){
+    const s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + CONFIG.GA_ID; document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || []; window.gtag = function(){ dataLayer.push(arguments); }; gtag('js', new Date()); gtag('config', CONFIG.GA_ID);
+  }
+
+  // 저장된 면허
+  const saved = load();
+  if (saved && saved.name && saved.issuedAt){
+    $('btnMine').hidden = false;
+    $('btnMine').onclick = () => { S = Object.assign(S, saved); R = computeResult(); renderResult(false); };
+    $('inName').value = saved.name; $('inBirth').value = saved.birth || '';
+    const idx = AVATARS.indexOf(saved.avatar); if (idx >= 0) av.children[idx].click();
+  }
+
+  // 버튼
+  $('btnStart').onclick = () => { go('sForm'); track('start'); };
+  $('btnQuiz').onclick = startQuiz;
+  $('inName').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('inName').blur(); } });
+  document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+  document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => { b.closest('.modal').hidden = true; clearInterval(clockTimer); });
+  $('btnStory').onclick = () => saveImage('story');
+  $('btnCard').onclick = () => saveImage('card');
+  $('btnShare').onclick = shareLink;
+  $('btnGeo').onclick = checkGeo;
+  $('btnRetry').onclick = () => { track('retry'); go('sForm'); };
+
+  // 카드 기울이기
+  const cw = $('cardWrap');
+  cw.addEventListener('pointermove', e => {
+    const r = cw.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    cw.style.transform = `perspective(800px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
+    cw.style.setProperty('--hx', (x + .5) * 100 + '%'); cw.style.setProperty('--hy', (y + .5) * 100 + '%');
+  });
+  cw.addEventListener('pointerleave', () => { cw.style.transform = ''; });
+})();
+</script>
+</body>
+</html>
