@@ -25,9 +25,7 @@ function loadGlobals() {
 }
 const { CFG, P } = loadGlobals();
 const BASE = (CFG.BASE_URL || "").replace(/\/$/, "");
-const GRADES = ["1++", "1+", "1", "2", "3"];
-const gslug = (g) => g.replace(/\+/g, "p");
-const glabel = (g) => (g.indexOf("+") > -1 ? g : g + "등급");
+const BANDS = P.bands.map((b) => b.key);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c]));
 
 /* ── 결과 페이지 ── */
@@ -36,11 +34,11 @@ function buildPages() {
   fs.mkdirSync(path.join(ROOT, "r"), { recursive: true });
   let n = 0;
   for (const type of P.typeOrder) {
-    for (const g of GRADES) {
-      const t = P.types[type], slug = `${type}-${gslug(g)}`;
+    for (const bk of BANDS) {
+      const t = P.types[type], b = P.bands.find((x) => x.key === bk), slug = `${type}-${bk}`;
       const url = `${BASE}/r/${slug}.html`;
-      const title = `나 인성 ${glabel(g)} ${t.name} 나옴 | ${P.title}`;
-      const desc = `${t.tag}. ${P.grades.text[g]} 너는 몇 등급?`;
+      const title = `손절 위험도 ${b.label} · ${t.name} | ${P.title}`;
+      const desc = `${b.line} 너는 몇 %?`;
       const img = `${BASE}/assets/cards/${slug}.png`;
       let html = tpl
         .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
@@ -83,27 +81,27 @@ async function buildCards() {
   await page.waitForFunction(() => window.INSUNG && window.INSUNG.pack());
 
   /* 각 (부위, 등급) 조합을 만드는 답변 조합을 찾습니다. 규칙상 불가능한 조합은 건너뜁니다 */
-  const reps = await page.evaluate((GRADES) => {
+  const reps = await page.evaluate((BANDS) => {
     /* 점수 문항 전부를 전수 탐색 (4^10). 신뢰도 문항은 1번과 같은 점수의 선택지로 맞춰 '양호'가 나오게 함 */
     const P = window.INSUNG.pack(), out = {}, qs = P.questions;
     const scoreIdx = qs.map((q, i) => (q.ax === "chk" ? -1 : i)).filter((i) => i >= 0);
     const chkIdx = qs.map((q, i) => (q.ax === "chk" ? i : -1)).filter((i) => i >= 0);
-    const total = Math.pow(4, scoreIdx.length), want = P.typeOrder.length * GRADES.length;
+    const total = Math.pow(4, scoreIdx.length), want = P.typeOrder.length * BANDS.length;
     for (let n = 0; n < total; n++) {
       const picks = new Array(qs.length).fill(0);
       let m = n; scoreIdx.forEach((qi) => { picks[qi] = m % 4; m = Math.floor(m / 4); });
       chkIdx.forEach((ci) => { const base = qs[qs[ci].chkOf || 0]; const p = base.o[picks[qs[ci].chkOf || 0]].p; let best = 0; qs[ci].o.forEach((o, oi) => { if (Math.abs(o.p - p) < Math.abs(qs[ci].o[best].p - p)) best = oi; }); picks[ci] = best; });
       const r = window.INSUNG.judge(picks);
-      const key = r.type + "-" + window.INSUNG.gslug(r.grade);
+      const key = window.INSUNG.keyOf(r);
       if (!out[key]) { out[key] = r.code; if (Object.keys(out).length >= want) break; }
     }
     return out;
-  }, GRADES);
+  }, BANDS);
 
   const made = [], skipped = [];
   for (const type of P.typeOrder) {
-    for (const g of GRADES) {
-      const slug = `${type}-${gslug(g)}`;
+    for (const bk of BANDS) {
+      const slug = `${type}-${bk}`;
       if (!reps[slug]) { skipped.push(slug); continue; }
       await page.goto(`${fileUrl}?a=${reps[slug]}&card=1`, { waitUntil: "load" });
       await page.waitForSelector('body[data-card-ready="1"]', { timeout: 20000 });
@@ -117,18 +115,15 @@ async function buildCards() {
   const og = await page.evaluate(async ({ title, sub }) => {
     await (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve());
     const c = document.createElement("canvas"); c.width = 1200; c.height = 630; const x = c.getContext("2d");
-    x.fillStyle = "#FFFDF7"; x.fillRect(0, 0, 1200, 630);
-    x.strokeStyle = "#1E1C19"; x.lineWidth = 3; x.strokeRect(30, 30, 1140, 570);
-    x.strokeStyle = "#E3DFD6"; x.lineWidth = 2; x.strokeRect(42, 42, 1116, 546);
+    const F = '"Pretendard Variable", Pretendard, "Noto Sans KR", sans-serif';
+    x.fillStyle = "#FFFFFF"; x.fillRect(0, 0, 1200, 630);
     const im = await new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = "assets/hero.png"; });
-    if (im) { const h = 520, w = im.width * h / im.height; x.drawImage(im, 1200 - w - 60, 55, w, h); }
-    x.fillStyle = "#6A655C"; x.font = '600 26px "IBM Plex Sans KR", sans-serif'; x.fillText(sub, 80, 170);
-    x.fillStyle = "#1E1C19"; x.font = '800 72px "Nanum Myeongjo", serif'; x.fillText("당신의 인성,", 80, 270); x.fillText("몇 등급입니까?", 80, 360);
-    x.font = '400 28px "IBM Plex Sans KR", sans-serif'; x.fillText("소고기 등급판정 기준 그대로 · 11문항 · 2분", 80, 430);
-    x.save(); x.translate(240, 520); x.rotate(-12 * Math.PI / 180);
-    x.strokeStyle = "#B3261E"; x.lineWidth = 6; x.beginPath(); x.arc(0, 0, 62, 0, Math.PI * 2); x.stroke();
-    x.fillStyle = "#B3261E"; x.textAlign = "center"; x.font = '800 44px "Nanum Myeongjo", serif'; x.fillText("1++", 0, 16); x.restore();
-    x.fillStyle = "#1E1C19"; x.font = '800 30px "Nanum Myeongjo", serif'; x.fillText(title, 340, 530);
+    if (im) { const h = 560, w = im.width * h / im.height; x.drawImage(im, 1200 - w - 20, 35, w, h); }
+    x.fillStyle = "#6B7684"; x.font = "600 28px " + F; x.fillText(title, 80, 150);
+    x.fillStyle = "#191F28"; x.font = "800 76px " + F; x.fillText("친구들이 아직", 80, 270); x.fillText("널 안 버린 이유", 80, 365);
+    x.fillStyle = "#6B7684"; x.font = "400 30px " + F; x.fillText("11문항 · 2분 · 손절 위험도 확인", 80, 440);
+    x.fillStyle = "#3366F6"; x.beginPath(); x.moveTo(104, 500); x.arcTo(380, 500, 380, 564, 32); x.arcTo(380, 564, 104, 564, 32); x.arcTo(80, 564, 80, 500, 32); x.arcTo(80, 500, 380, 500, 32); x.closePath(); x.fill();
+    x.fillStyle = "#FFFFFF"; x.font = "700 30px " + F; x.textAlign = "center"; x.fillText("확인하기", 230, 543); x.textAlign = "left";
     return c.toDataURL("image/png");
   }, { title: P.title, sub: P.subtitle });
   fs.writeFileSync(path.join(ROOT, "assets", "og-default.png"), Buffer.from(og.split(",")[1], "base64"));

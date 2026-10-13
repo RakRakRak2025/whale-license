@@ -1,5 +1,5 @@
 /* ============================================================
-   인성 등급판정소 — 엔진
+   인성 손절 테스트 — 엔진
    콘텐츠는 packs/<PACK>.js, 배포 설정은 config.js. 이 파일은 둘 다 모른 채 동작합니다.
    화면: intro → quiz → (memo) → judging → result
    결과 페이지(r/*.html)는 body[data-result] + ?a=답변코드 로 같은 엔진을 재사용합니다.
@@ -9,21 +9,18 @@
 
   var CFG = window.INSUNG_CONFIG || {};
   var ROOT = (document.body.getAttribute("data-root") || "");
-  var PACK_ID = CFG.PACK || "insung-v1";
+  var PACK_ID = CFG.PACK || "sonjeol-v1";
   var $ = function (id) { return document.getElementById(id); };
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var UA = navigator.userAgent || "";
   var IN_APP = /KAKAOTALK|Instagram|FBAN|FBAV|NAVER\(inapp|Line\//i.test(UA);
   var IS_ANDROID = /Android/i.test(UA);
-  var P = null;      // 콘텐츠팩
+  var P = null;
   var state = { i: 0, picks: [], t0: 0 };
 
   /* ── 유틸 ── */
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c]; }); }
   function fill(tpl, map) { return String(tpl).replace(/\{(\w+)\}/g, function (_, k) { return map[k] != null ? map[k] : ""; }); }
-  function gslug(g) { return g.replace(/\+/g, "p"); }
-  function gfromSlug(s) { return s.replace(/p/g, "+"); }
-  function ro(label) { return label + (/등급$/.test(label) ? "으로" : "로"); }
   function wait(ms) { return new Promise(function (r) { setTimeout(r, reduce ? Math.min(ms, 120) : ms); }); }
   function show(id) {
     ["intro", "quiz", "judging", "result"].forEach(function (k) { $(k).classList.toggle("on", k === id); });
@@ -38,8 +35,11 @@
   }
   function serialOf(picks) {
     var h = 7; picks.forEach(function (p, i) { h = (h * 31 + p + 1 + i) % 1679616; });
-    return "No." + h.toString(36).toUpperCase().padStart(4, "0");
+    return h.toString(36).toUpperCase().padStart(4, "0");
   }
+  function axisOf(k) { for (var i = 0; i < P.axes.length; i++) if (P.axes[i].k === k) return P.axes[i]; return null; }
+  function bandOf(risk) { for (var i = 0; i < P.bands.length; i++) if (risk <= P.bands[i].max) return P.bands[i]; return P.bands[P.bands.length - 1]; }
+  function bandByKey(key) { for (var i = 0; i < P.bands.length; i++) if (P.bands[i].key === key) return P.bands[i]; return null; }
 
   /* ── 측정 ── */
   function ga(name, params) { try { if (window.gtag) window.gtag("event", name, params || {}); } catch (e) {} }
@@ -64,50 +64,45 @@
 
   /* ── 채점 ── */
   function judge(picks) {
-    var sum = {}, low = {}, chk = null, chkOf = 0;
-    P.axes.forEach(function (a) { sum[a.k] = 0; });
+    var s = {}, total = 0, chk = null, chkOf = 0, goods = [], bads = [];
+    P.axes.forEach(function (a) { s[a.k] = 0; });
     picks.forEach(function (oi, qi) {
       var q = P.questions[qi], o = q.o[oi];
       if (q.ax === "chk") { chk = o.p; chkOf = q.chkOf || 0; return; }
-      sum[q.ax] += o.p;
-      if (o.cb && (!low[q.ax] || o.p < low[q.ax].p)) low[q.ax] = o;
+      s[q.ax] += o.p; total += o.p;
+      if (o.good && o.p >= 3) goods.push({ p: o.p, q: qi, text: o.good });
+      if (o.bad && o.p <= 1) bads.push({ p: o.p, q: qi, text: o.bad });
     });
-    var no = {}, gi = {}, total = 0, minNo = 9;
-    P.axes.forEach(function (a) {
-      no[a.k] = P.map[Math.max(0, Math.min(8, sum[a.k]))];
-      gi[a.k] = P.grades.order.indexOf(P.grades.of(no[a.k]));
-      total += no[a.k]; minNo = Math.min(minNo, no[a.k]);
-    });
-    var fin = Math.min.apply(null, P.axes.map(function (a) { return gi[a.k]; }));
-    var grade = P.grades.order[fin];
-    var cuts = fin < P.grades.order.length - 1 ? P.axes.filter(function (a) { return gi[a.k] === fin; }).map(function (a) { return a.k; }) : [];
+    var minS = 9, minK = null;
+    P.axes.forEach(function (a) { if (s[a.k] < minS) { minS = s[a.k]; minK = a.k; } });
+    var risk = Math.round(Math.max(P.risk.min, Math.min(P.risk.max, P.risk.base - total * P.risk.per)));
     var type = null;
-    for (var r = 0; r < P.rules.length && !type; r++) { if (P.rules[r].test(no, total, minNo)) type = P.rules[r].type; }
+    for (var r = 0; r < P.rules.length && !type; r++) { if (P.rules[r].test(s, total, minS)) type = P.rules[r].type; }
     if (!type) {
-      var mx = Math.max.apply(null, P.axes.map(function (a) { return no[a.k]; }));
-      var tied = P.axes.filter(function (a) { return no[a.k] === mx; }).map(function (a) { return a.k; });
-      var seed = picks.reduce(function (s, p, i) { return s + p * (i + 1); }, 0);
+      var mx = Math.max.apply(null, P.axes.map(function (a) { return s[a.k]; }));
+      var tied = P.axes.filter(function (a) { return s[a.k] === mx; }).map(function (a) { return a.k; });
+      var seed = picks.reduce(function (acc, p, i) { return acc + p * (i + 1); }, 0);
       type = P.topByAxis[tied[seed % tied.length]];
     }
+    var weakAxis = minS <= P.weakMax ? minK : null;
+    var weakLine = weakAxis ? axisOf(weakAxis).low : P.noWeak;
+    goods.sort(function (a, b) { return b.p - a.p || a.q - b.q; });
+    bads.sort(function (a, b) { return a.p - b.p || a.q - b.q; });
     var trust = null;
     if (chk !== null) { var base = P.questions[chkOf].o[picks[chkOf]].p; trust = Math.abs(base - chk) >= P.trust.diff ? P.trust.bad : P.trust.ok; }
-    var callback = "";
-    if (cuts.length) { var ax = axisOf(cuts[0]); callback = low[cuts[0]] ? low[cuts[0]].cb : ax.fallback; }
-    return { picks: picks, no: no, gi: gi, grade: grade, cuts: cuts, type: type, trust: trust, callback: callback, serial: serialOf(picks), code: encode(picks) };
+    return { picks: picks, code: encode(picks), serial: serialOf(picks), s: s, total: total, risk: risk, band: bandOf(risk), type: type,
+      weakAxis: weakAxis, weakLine: weakLine, reasons: goods.slice(0, 3), cuts: bads.slice(0, 3), trust: trust };
   }
-  function axisOf(k) { for (var i = 0; i < P.axes.length; i++) if (P.axes[i].k === k) return P.axes[i]; return null; }
-  function cutText(res) {
-    if (!res.cuts.length) return P.share.cutNone;
-    return fill(P.share.cutSome, { axes: res.cuts.map(function (k) { return axisOf(k).short; }).join("·") });
-  }
+  function reasonText(res) { return res.cuts.length ? res.cuts[0].text.replace(/\.$/, "") : P.share.reasonNone; }
   function resultUrl(res, method) {
     var base = (CFG.BASE_URL || "").replace(/\/$/, "");
-    var u = base + "/r/" + res.type + "-" + gslug(res.grade) + ".html?a=" + res.code;
-    if (method) u += "&utm_source=" + method + "&utm_medium=share&utm_campaign=" + PACK_ID + "&utm_content=" + res.type;
+    var u = base + "/r/" + res.type + "-" + res.band.key + ".html" + (res.code ? "?a=" + res.code : "");
+    if (method) u += (res.code ? "&" : "?") + "utm_source=" + method + "&utm_medium=share&utm_campaign=" + PACK_ID + "&utm_content=" + res.type;
     return u;
   }
   function shareMap(res, method) {
-    return { grade: P.grades.label(res.grade), type: P.types[res.type].name, cut: cutText(res), url: resultUrl(res, method), best: P.types[P.types[res.type].best].name };
+    var t = P.types[res.type];
+    return { risk: res.risk, type: t.name, reason: reasonText(res), url: resultUrl(res, method), best: P.types[t.best].name };
   }
 
   /* ── 광고 ── */
@@ -141,7 +136,7 @@
     var count = (CFG.STATS && CFG.STATS.total) ? '<p class="count">' + esc(fill(I.countLabel, { n: CFG.STATS.total.toLocaleString("ko-KR") })) + "</p>" : "";
     el.innerHTML =
       '<div class="hero" id="hero"><img src="' + ROOT + esc(I.hero) + '" alt="" onerror="this.parentNode.classList.add(\'empty\')"></div>' +
-      '<p class="eyebrow">' + esc(P.title) + " · " + esc(P.subtitle) + "</p>" +
+      '<p class="eyebrow">' + esc(P.title) + "</p>" +
       "<h1>" + I.headline.map(esc).join("<br>") + "</h1>" +
       '<p class="muted">' + esc(I.lead) + "</p>" +
       '<ul class="intro-bullets">' + I.bullets.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("") + "</ul>" + count +
@@ -164,11 +159,11 @@
     var axName = q.ax === "chk" ? P.ui.trustLabel : axisOf(q.ax).name;
     el.innerHTML =
       '<div class="bar"><i id="pbar"></i></div>' +
-      '<div class="q-meta"><span>' + esc(P.ui.qLabel) + " <b>" + (i + 1) + " / " + n + "</b></span><span class=\"q-axis\">" + esc(axName) + "</span></div>" +
+      '<div class="q-meta"><span>' + esc(P.ui.qLabel) + " <b>" + (i + 1) + "</b> / " + n + '</span><span class="q-axis">' + esc(axName) + "</span></div>" +
       '<p class="q-text">' + esc(q.t) + "</p>" +
       '<div class="opts">' + q.o.map(function (o, oi) { return '<button class="btn" type="button" data-oi="' + oi + '">' + esc(o.x) + "</button>"; }).join("") + "</div>" +
       '<p class="toast" id="toast" role="status"></p>' +
-      '<div class="q-foot">' + (i > 0 ? '<button class="link" type="button" id="backBtn">이전 문항</button>' : "<span></span>") + '<span class="small muted num">' + esc(q.src) + "</span></div>";
+      '<div class="q-foot">' + (i > 0 ? '<button class="link" type="button" id="backBtn">이전</button>' : "<span></span>") + "</div>";
     requestAnimationFrame(function () { $("pbar").style.width = (Math.pow(i / n, 0.6) * 100).toFixed(1) + "%"; });
     var busy = false;
     Array.prototype.forEach.call(el.querySelectorAll("[data-oi]"), function (b) {
@@ -180,7 +175,7 @@
         if (navigator.vibrate && !reduce) { try { navigator.vibrate(8); } catch (e) {} }
         state.picks[i] = oi;
         ga("question_answer", { q_index: i + 1, option: oi });
-        wait(o.r ? 720 : 260).then(function () {
+        wait(o.r ? 700 : 260).then(function () {
           state.i = i + 1;
           if (P.midMemo && i === P.midMemo.after) return showMemo().then(next);
           next();
@@ -195,7 +190,7 @@
   function showMemo() {
     var hasCut = state.picks.some(function (oi, qi) { var q = P.questions[qi]; return q.ax !== "chk" && q.o[oi].p === 0; });
     var m = document.createElement("div"); m.className = "memo";
-    m.innerHTML = '<img class="judge" src="' + ROOT + 'assets/judge.png" alt="" onerror="this.remove()"><p>' + esc(hasCut ? P.midMemo.cut : P.midMemo.clean) + '</p><button class="link" type="button">계속</button>';
+    m.innerHTML = '<img class="mood" src="' + ROOT + (hasCut ? "assets/mood-warn.png" : "assets/mood-safe.png") + '" alt="" onerror="this.remove()"><p>' + esc(hasCut ? P.midMemo.cut : P.midMemo.clean) + '</p><button class="link" type="button">계속</button>';
     $("app").appendChild(m);
     return new Promise(function (resolve) {
       var done = false; function go() { if (done) return; done = true; m.remove(); resolve(); }
@@ -206,104 +201,81 @@
   }
   function finish() {
     var res = judge(state.picks);
-    ga("quiz_complete", { grade: res.grade, type: res.type, seconds: Math.round((Date.now() - state.t0) / 1000) });
-    log({ action: "complete", grade: res.grade, type: res.type, serial: res.serial, cuts: res.cuts.join(""), trust: res.trust === P.trust.ok ? 1 : 0 });
+    ga("quiz_complete", { risk: res.risk, band: res.band.key, type: res.type, seconds: Math.round((Date.now() - state.t0) / 1000) });
+    log({ action: "complete", grade: res.band.key, type: res.type, serial: res.serial, cuts: String(res.risk), trust: res.trust === P.trust.ok ? 1 : 0 });
     show("judging"); runJudging(res).then(function () { renderResult(res, { animate: true }); show("result"); });
   }
 
-  /* ── 판정 연출 ── */
+  /* ── 계산 연출: 숫자가 올라가다 멈춤 ── */
   function runJudging(res) {
     var el = $("judging");
-    el.innerHTML =
-      '<img class="judge" src="' + ROOT + 'assets/judge.png" alt="" style="width:120px;height:120px;object-fit:contain;align-self:center" onerror="this.remove()">' +
-      '<p class="jg-title" id="jgTitle"></p>' +
-      '<div class="jg-axes">' + P.axes.map(function (a) {
-        return '<div class="jg-ax" data-k="' + a.k + '"><span class="ax-name">' + esc(a.name) + '</span><span class="ax-bar"><i></i></span><span class="ax-no">No.-</span></div>';
-      }).join("") + "</div>" +
-      '<div class="jg-stamp" id="jgStamp"></div>';
-    var title = $("jgTitle");
-    var chain = Promise.resolve();
-    P.axes.forEach(function (a, k) {
-      chain = chain.then(function () {
-        title.textContent = P.ui.judging[k] || "";
-        var row = el.querySelector('[data-k="' + a.k + '"]'); row.classList.add("on");
-        row.querySelector(".ax-bar i").style.width = (res.no[a.k] / 9 * 100).toFixed(1) + "%";
-        row.querySelector(".ax-no").textContent = "No." + res.no[a.k];
-        if (res.cuts.indexOf(a.k) > -1) row.classList.add("cut");
-        return wait(560);
-      });
-    });
-    return chain.then(function () {
-      title.textContent = P.ui.judging[P.axes.length] || "";
-      return wait(600);
+    el.innerHTML = '<p class="jg-title" id="jgTitle">' + esc(P.ui.judging[0]) + '</p><p class="jg-num"><span id="jgNum">0</span><small>%</small></p><p class="jg-sub" id="jgSub"></p><img class="jg-mood" id="jgMood" alt="" hidden>';
+    var titles = P.ui.judging, num = $("jgNum"), title = $("jgTitle");
+    var dur = reduce ? 200 : 1900, start = null, target = res.risk;
+    return new Promise(function (resolve) {
+      function step(ts) {
+        if (!start) start = ts;
+        var p = Math.min(1, (ts - start) / dur), e = 1 - Math.pow(1 - p, 3);
+        num.textContent = Math.round(target * e);
+        var ti = Math.min(titles.length - 1, Math.floor(p * titles.length));
+        title.textContent = titles[ti];
+        if (p < 1) requestAnimationFrame(step); else resolve();
+      }
+      requestAnimationFrame(step);
     }).then(function () {
-      title.textContent = P.grades.stampLine[res.grade] || "";
-      $("jgStamp").innerHTML = stampHtml(res.grade, true);
+      num.textContent = target;
+      title.textContent = P.ui.riskLabel;
+      $("jgSub").textContent = res.band.label + " · " + res.band.line;
+      var m = $("jgMood"); m.src = ROOT + res.band.mood; m.hidden = false; m.onerror = function () { m.hidden = true; };
       if (navigator.vibrate && !reduce) { try { navigator.vibrate([30, 40, 60]); } catch (e) {} }
-      return wait(900);
+      return wait(1300);
     });
   }
-  function stampHtml(grade, animate) {
-    return '<div class="stamp' + (animate && !reduce ? " drop" : "") + '" aria-label="최종 ' + esc(P.grades.label(grade)) + '"><span class="stamp-grade">' + esc(grade) + '</span><span class="stamp-sub">등급</span></div>';
-  }
 
-  /* ── 결과 카드 (DOM) ── */
-  function certHtml(res, opts) {
-    var t = P.types[res.type], full = !!res.picks;
-    var axes = full ? P.axes.map(function (a) {
-      var n = res.no[a.k], d = a.desc[n >= 7 ? 2 : n >= 4 ? 1 : 0], cut = res.cuts.indexOf(a.k) > -1;
-      return '<div class="ax' + (cut ? " cutax" : "") + '"><span class="ax-name">' + esc(a.name) + '</span><span class="ax-bar"><i style="width:' + (n / 9 * 100).toFixed(1) + '%"></i></span><span class="ax-no">No.' + n + '</span><span class="ax-desc">' + esc(d) + " · " + esc(P.grades.label(P.grades.order[res.gi[a.k]])) + (cut ? " · " + esc(P.ui.cutHere) : "") + "</span></div>";
-    }).join("") : "";
-    var cutline = !full ? "" : res.cuts.length
-      ? fill(P.ui.cutLine, { axes: res.cuts.map(function (k) { return axisOf(k).name; }).join(", "), grade: ro(P.grades.label(res.grade)) })
-      : P.ui.cutLineNone;
-    var rarity = "";
-    if (CFG.STATS && CFG.STATS.grades && CFG.STATS.grades[res.grade] != null) rarity = '<p class="cert-rarity">' + esc(fill(P.ui.rarity, { pct: Math.round(CFG.STATS.grades[res.grade] * 100), grade: P.grades.label(res.grade) })) + "</p>";
-    return '<div class="cert-top"><span class="cert-title">' + esc(P.ui.certTitle) + '</span><span class="cert-no">' + esc(res.serial || "") + "</span></div>" +
-      '<div class="cert-main"><img class="cert-char" src="' + ROOT + esc(t.img) + '" alt="" onerror="this.classList.add(\'empty\')">' +
-      '<div><div class="cut-label">판정 부위</div><div class="cut-name">' + esc(t.name) + '</div><div class="cut-tag">' + esc(t.tag) + "</div></div>" +
-      stampHtml(res.grade, opts && opts.animate) + "</div>" +
-      (axes ? '<div class="axes">' + axes + "</div>" : "") +
-      (cutline ? '<p class="cert-cutline">' + esc(cutline) + "</p>" : "") +
-      (res.callback ? '<p class="cert-callback">"' + esc(res.callback) + '"</p>' : "") +
-      '<p class="cert-desc">' + esc(t.desc) + " " + esc(P.grades.text[res.grade]) + "</p>" +
-      '<div class="cert-pair"><div><b>' + esc(P.ui.pairBest) + "</b>" + esc(P.types[t.best].name) + " · " + esc(t.bestWhy) + "</div><div><b>" + esc(P.ui.pairWorst) + "</b>" + esc(P.types[t.worst].name) + " · " + esc(t.worstWhy) + "</div></div>" +
-      rarity +
-      (res.trust ? '<p class="cert-trust">' + esc(P.ui.trust) + ": " + esc(res.trust) + "</p>" : "") +
-      '<div class="cert-foot"><span>' + esc(P.title) + (CFG.CREDIT ? " · " + esc(CFG.CREDIT) : "") + "</span><span>" + esc(P.ui.disclaimer) + "</span></div>";
-  }
-
-  /* ── 결과 화면 ── */
+  /* ── 결과 ── */
   var currentRes = null, cardUrl = null;
+  function axesHtml(res) {
+    return '<div class="axes">' + P.axes.map(function (a) {
+      var v = res.s[a.k], weak = res.weakAxis === a.k;
+      return '<div class="ax' + (weak ? " weak" : "") + '"><span class="ax-name">' + esc(a.name) + '</span><span class="ax-bar"><i style="width:' + (v / 8 * 100).toFixed(0) + '%"></i></span><span class="ax-no num">' + v + "/8</span></div>";
+    }).join("") + "</div>";
+  }
   function renderResult(res, opts) {
     currentRes = res; cardUrl = null;
     var t = P.types[res.type], full = !!res.picks, el = $("result");
+    var rarity = (CFG.STATS && CFG.STATS.grades && CFG.STATS.grades[res.band.key] != null) ? '<p class="rarity">' + esc(fill(P.ui.rarity, { pct: Math.round(CFG.STATS.grades[res.band.key] * 100) })) + "</p>" : "";
     var coupang = "";
     if (CFG.COUPANG && CFG.COUPANG.enabled && CFG.COUPANG.widgets && CFG.COUPANG.widgets[res.type]) {
-      coupang = '<div class="sec coupang"><h2>' + esc(P.ui.coupangTitle) + " · " + esc(t.name) + '</h2><p class="disclosure">' + esc(P.ui.coupangDisclosure) + "</p>" +
-        '<iframe title="쿠팡 파트너스" src="https://ads-partners.coupang.com/widgets.html?id=' + encodeURIComponent(CFG.COUPANG.widgets[res.type]) + "&template=carousel&trackingCode=" + encodeURIComponent(CFG.COUPANG.tracking) + '&subId=' + encodeURIComponent(res.type) + '&width=100%25&height=140" height="140" scrolling="no" referrerpolicy="unsafe-url"></iframe></div>';
+      coupang = '<div class="card coupang"><h2>' + esc(P.ui.coupangTitle) + '</h2><p class="disclosure">' + esc(P.ui.coupangDisclosure) + "</p>" +
+        '<iframe title="쿠팡 파트너스" src="https://ads-partners.coupang.com/widgets.html?id=' + encodeURIComponent(CFG.COUPANG.widgets[res.type]) + "&template=carousel&trackingCode=" + encodeURIComponent(CFG.COUPANG.tracking) + "&subId=" + encodeURIComponent(res.type) + '&width=100%25&height=140" height="140" scrolling="no" referrerpolicy="unsafe-url"></iframe></div>';
     }
     var more = (CFG.MORE_TESTS || []).map(function (m) {
       return m.soon || !m.url ? '<div class="soon"><b>' + esc(m.title) + "</b><span>" + esc(m.desc || P.ui.soon) + "</span></div>"
         : '<a href="' + esc(m.url) + '"><b>' + esc(m.title) + "</b><span>" + esc(m.desc || "") + "</span></a>";
     }).join("");
     var peer = (CFG.PEER_ENABLED && full) ? '<button class="btn ghost" type="button" id="peerBtn">' + esc(P.ui.peer) + "</button>" : "";
+    var reasons = full && res.reasons.length ? '<div class="card"><h2>' + esc(P.ui.reasonsTitle) + '</h2><ul class="list good">' + res.reasons.map(function (r) { return "<li><span>" + esc(r.text) + "</span></li>"; }).join("") + "</ul></div>" : "";
+    var cuts = full ? '<div class="card"><h2>' + esc(P.ui.cutsTitle) + "</h2>" + (res.cuts.length ? '<ul class="list bad">' + res.cuts.map(function (r) { return "<li><span>" + esc(r.text) + "</span></li>"; }).join("") + "</ul>" : '<p class="muted">' + esc(P.ui.cutsNone) + "</p>") + "</div>" : "";
     el.innerHTML =
-      (!full ? '<button class="btn primary" type="button" id="meTooTop">나도 판정받기</button>' : "") +
-      '<div class="cert" id="cert">' + certHtml(res, opts) + "</div>" +
-      '<div class="card-img" id="cardImg"><img id="cardPng" alt="결과 카드"><p class="hint">' + esc(P.ui.saveHint) + '</p><a class="btn ghost" id="cardDl" download="insung-' + esc(res.type) + "-" + esc(gslug(res.grade)) + '.png" hidden>이미지 파일로 받기</a></div>' +
-      (IN_APP ? '<div class="inapp" id="inapp"><span>' + esc(P.ui.inapp) + '</span>' + (IS_ANDROID ? '<a href="#" id="extBtn">다른 브라우저로 열기</a>' : "") + "</div>" : "") +
-      '<button class="btn ghost" type="button" id="pairBtn">' + esc(fill(P.share.pairCta, { best: P.types[t.best].name })) + "</button>" + peer +
+      (!full ? '<button class="btn primary" type="button" id="meTooTop">' + esc(P.ui.meToo) + "</button>" : "") +
+      '<div class="card res-top"><p class="eyebrow">' + esc(P.ui.riskLabel) + '</p><p class="res-risk"><b class="num">' + res.risk + '</b><span>%</span></p><span class="res-band ' + esc(res.band.key) + '">' + esc(res.band.label) + '</span><p class="res-line">' + esc(res.band.line) + "</p>" + rarity + "</div>" +
+      '<div class="card"><div class="res-type"><div><p class="tl">' + esc(P.ui.typeLabel) + '</p><p class="tn">' + esc(t.name) + '</p><p class="tw">' + esc(res.weakLine || "") + '</p></div><img src="' + ROOT + esc(t.img) + '" alt="" onerror="this.classList.add(\'empty\')"></div><p class="res-desc">' + esc(t.desc) + "</p>" + (full && res.trust ? '<p class="trust">' + esc(P.ui.trust) + ": " + esc(res.trust) + "</p>" : "") + "</div>" +
+      reasons + cuts +
+      (full ? '<div class="card"><h2>' + esc(P.ui.axesTitle) + "</h2>" + axesHtml(res) + "</div>" : "") +
+      '<div class="card"><div class="pair"><div><b>' + esc(P.ui.pairBest) + "</b><strong>" + esc(P.types[t.best].name) + "</strong><span>" + esc(t.bestWhy) + "</span></div><div><b>" + esc(P.ui.pairWorst) + "</b><strong>" + esc(P.types[t.worst].name) + "</strong><span>" + esc(t.worstWhy) + "</span></div></div>" +
+      '<button class="btn ghost" type="button" id="pairBtn">' + esc(fill(P.share.pairCta, { best: P.types[t.best].name })) + "</button>" + peer + "</div>" +
+      '<div class="card-img" id="cardImg"><img id="cardPng" alt="결과 이미지"><p class="hint">' + esc(P.ui.saveHint) + '</p><a class="btn ghost" id="cardDl" download="sonjeol-' + esc(res.type) + "-" + esc(res.band.key) + '.png" hidden>이미지 파일로 받기</a></div>' +
+      (IN_APP ? '<div class="inapp" id="inapp"><span>' + esc(P.ui.inapp) + "</span>" + (IS_ANDROID ? '<a href="#" id="extBtn">다른 브라우저로 열기</a>' : "") + "</div>" : "") +
       coupang +
       adHtml("result_mid") +
-      '<div class="vote" id="vote"><p class="vote-q">' + esc(P.vote.q) + '</p><div class="btn-row">' + P.vote.options.map(function (o) { return '<button class="btn" type="button" data-v="' + esc(o.k) + '">' + esc(o.x) + "</button>"; }).join("") + '</div><p class="vote-out" id="voteOut"></p></div>' +
+      '<div class="card vote" id="vote"><p class="vote-q">' + esc(P.vote.q) + '</p><div class="btn-row">' + P.vote.options.map(function (o) { return '<button class="btn" type="button" data-v="' + esc(o.k) + '">' + esc(o.x) + "</button>"; }).join("") + '</div><p class="vote-out" id="voteOut"></p></div>' +
       '<div class="sec more"><h2>' + esc(P.ui.more) + "</h2>" + more + "</div>" +
       adHtml("result_bottom") +
-      '<button class="btn ghost" type="button" id="againBtn">' + esc(P.ui.again) + "</button>" +
+      '<button class="btn quiet" type="button" id="againBtn">' + esc(P.ui.again) + "</button>" +
       "<footer><span>" + esc(P.intro.disclaimer) + "</span><span>" + esc(CFG.CREDIT || "") + "</span></footer>";
     mountAds(el);
 
-    /* 공유 바 */
+    /* 하단 바 */
     var sb = $("sharebar-in");
     if (full) {
       var third = CFG.KAKAO_JS_KEY ? (navigator.share ? P.ui.native : P.ui.link) : (navigator.share ? P.ui.native : "");
@@ -314,7 +286,7 @@
       $("saveBtn").addEventListener("click", function () { saveCard(res); });
       var ms = $("moreShareBtn"); if (ms) ms.addEventListener("click", function () { navigator.share ? shareNative(res) : copyLink(res, "link"); });
     } else {
-      sb.innerHTML = '<button class="btn kakao" type="button" id="meTooBtn">나도 판정받기</button><button class="btn" type="button" id="copyBtn2">' + esc(P.ui.link) + "</button>";
+      sb.innerHTML = '<button class="btn main" type="button" id="meTooBtn">' + esc(P.ui.meToo) + '</button><button class="btn" type="button" id="copyBtn2">' + esc(P.ui.link) + "</button>";
       $("meTooBtn").addEventListener("click", goHome);
       $("copyBtn2").addEventListener("click", function () { copyLink(res, "link"); });
       var top = $("meTooTop"); if (top) top.addEventListener("click", goHome);
@@ -326,7 +298,12 @@
 
     /* 투표 */
     var voted = null; try { voted = localStorage.getItem("insung:vote:" + PACK_ID); } catch (e) {}
-    function showVote(k) { $("voteOut").textContent = "당신의 판결: " + P.vote.options.filter(function (o) { return o.k === k; }).map(function (o) { return o.x; })[0] + ". " + P.vote.after; Array.prototype.forEach.call(el.querySelectorAll("[data-v]"), function (b) { b.classList.toggle("picked", b.getAttribute("data-v") === k); b.disabled = true; }); }
+    function showVote(k) {
+      var pick = P.vote.options.filter(function (o) { return o.k === k; })[0];
+      var stat = (CFG.STATS && CFG.STATS.vote && CFG.STATS.vote[k] != null) ? " 지금까지 " + Math.round(CFG.STATS.vote[k] * 100) + "%가 같은 선택." : " " + P.vote.after;
+      $("voteOut").textContent = (pick ? pick.x : "") + " 선택." + stat;
+      Array.prototype.forEach.call(el.querySelectorAll("[data-v]"), function (b) { b.classList.toggle("picked", b.getAttribute("data-v") === k); b.disabled = true; });
+    }
     if (voted) showVote(voted);
     Array.prototype.forEach.call(el.querySelectorAll("[data-v]"), function (b) {
       b.addEventListener("click", function () {
@@ -348,12 +325,12 @@
   /* ── 공유 ── */
   function shareKakao(res, variant) {
     var m = shareMap(res, "kakao");
-    var img = (CFG.BASE_URL || "").replace(/\/$/, "") + "/assets/cards/" + res.type + "-" + gslug(res.grade) + ".png";
+    var img = (CFG.BASE_URL || "").replace(/\/$/, "") + "/assets/cards/" + res.type + "-" + res.band.key + ".png";
     try {
       window.Kakao.Share.sendDefault({
         objectType: "feed",
         content: { title: fill(P.share.kakaoTitle, m), description: fill(P.share.kakaoDesc, m), imageUrl: img, imageWidth: 1080, imageHeight: 1920, link: { mobileWebUrl: m.url, webUrl: m.url } },
-        buttons: [{ title: "나도 판정받기", link: { mobileWebUrl: m.url, webUrl: m.url } }]
+        buttons: [{ title: P.ui.meToo, link: { mobileWebUrl: m.url, webUrl: m.url } }]
       });
       ga("share", { method: "kakao", item_id: res.type, variant: variant || "main" }); log({ action: "share", method: "kakao" });
     } catch (e) { copyLink(res, "link"); }
@@ -370,12 +347,12 @@
   }
   function shareNative(res) {
     var m = shareMap(res, "native");
-    var data = { title: P.title, text: fill(P.share.text, { grade: m.grade, type: m.type, cut: m.cut, url: "" }).trim(), url: m.url };
+    var data = { title: P.title, text: fill(P.share.text, { risk: m.risk, type: m.type, reason: m.reason, url: "" }).trim(), url: m.url };
     var go = function (d) { navigator.share(d).then(function () { ga("share", { method: "native", item_id: res.type }); log({ action: "share", method: "native" }); }).catch(function () {}); };
     if (cardUrl && navigator.canShare && window.File) {
       try {
         fetch(cardUrl).then(function (r) { return r.blob(); }).then(function (b) {
-          var f = new File([b], "insung.png", { type: "image/png" });
+          var f = new File([b], "sonjeol.png", { type: "image/png" });
           if (navigator.canShare({ files: [f] })) go({ files: [f], title: data.title, text: data.text + " " + data.url }); else go(data);
         }).catch(function () { go(data); });
         return;
@@ -386,7 +363,7 @@
   function toastBar(msg) {
     var t = document.createElement("div");
     t.textContent = msg; t.setAttribute("role", "status");
-    t.style.cssText = "position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1E1C19;color:#FFFDF7;padding:10px 16px;font-size:13.5px;z-index:30;";
+    t.style.cssText = "position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#191F28;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:30;";
     document.body.appendChild(t); setTimeout(function () { t.remove(); }, 1600);
   }
   function openExternal() {
@@ -401,7 +378,7 @@
     ga("share", { method: "image", item_id: res.type }); log({ action: "share", method: "image" });
   }
 
-  /* ── 카드 이미지 (캔버스 1080×1920) ── */
+  /* ── 결과 이미지 (캔버스 1080×1920) ── */
   function loadImg(src) { return new Promise(function (resolve) { var im = new Image(); if (/^https?:\/\//.test(src) && src.indexOf(location.origin) !== 0) im.crossOrigin = "anonymous"; im.onload = function () { resolve(im); }; im.onerror = function () { resolve(null); }; im.src = src; }); }
   function wrap(ctx, text, maxW, maxLines) {
     var lines = [], line = "";
@@ -413,65 +390,62 @@
     if (maxLines && lines.length > maxLines) { lines = lines.slice(0, maxLines); lines[maxLines - 1] = lines[maxLines - 1].replace(/.{2}$/, "") + "…"; }
     return lines;
   }
+  function rr(x, X, Y, W, H, R) { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W, Y, X + W, Y + H, R); x.arcTo(X + W, Y + H, X, Y + H, R); x.arcTo(X, Y + H, X, Y, R); x.arcTo(X, Y, X + W, Y, R); x.closePath(); }
   function drawCard(res, charImg) {
     var W = 1080, H = 1920, c = document.createElement("canvas"); c.width = W; c.height = H;
-    var x = c.getContext("2d"), t = P.types[res.type], PAD = 72;
-    var ink = "#1E1C19", muted = "#6A655C", line = "#E3DFD6", red = "#B3261E", paper = "#FFFDF7", soft = "#F1EFE8";
-    var fd = '"Nanum Myeongjo", serif', fb = '"IBM Plex Sans KR", sans-serif', fm = '"IBM Plex Mono", monospace';
-    x.fillStyle = paper; x.fillRect(0, 0, W, H);
-    x.strokeStyle = ink; x.lineWidth = 3; x.strokeRect(40, 40, W - 80, H - 80);
-    x.strokeStyle = line; x.lineWidth = 2; x.strokeRect(52, 52, W - 104, H - 104);
-    /* 제목 */
-    x.fillStyle = ink; x.font = "800 44px " + fd; x.textBaseline = "alphabetic"; x.fillText(P.ui.certTitle, PAD, 150);
-    x.fillStyle = muted; x.font = "500 26px " + fm; x.textAlign = "right"; x.fillText(res.serial, W - PAD, 150); x.textAlign = "left";
-    x.fillStyle = ink; x.fillRect(PAD, 176, W - PAD * 2, 4);
-    /* 캐릭터 */
-    var cy = 200, ch = 380;
-    if (charImg) { var r = Math.min(ch / charImg.width, ch / charImg.height), dw = charImg.width * r, dh = charImg.height * r; x.drawImage(charImg, (W - dw) / 2, cy + (ch - dh) / 2, dw, dh); }
-    else { x.fillStyle = soft; x.fillRect((W - ch) / 2, cy, ch, ch); }
-    /* 부위 + 도장 */
-    var y = 660;
-    x.fillStyle = muted; x.font = "600 24px " + fb; x.fillText("판정 부위", PAD, y);
-    x.fillStyle = ink; x.font = "800 96px " + fd; x.fillText(t.name, PAD, y + 108);
-    x.font = "600 34px " + fb; x.fillText(t.tag, PAD, y + 164);
-    x.save(); x.translate(W - PAD - 130, y + 70); x.rotate(-12 * Math.PI / 180);
-    x.strokeStyle = red; x.lineWidth = 8; x.beginPath(); x.arc(0, 0, 118, 0, Math.PI * 2); x.stroke();
-    x.lineWidth = 3; x.beginPath(); x.arc(0, 0, 104, 0, Math.PI * 2); x.stroke();
-    x.fillStyle = red; x.textAlign = "center"; x.font = "800 86px " + fd; x.fillText(res.grade, 0, 26); x.font = "700 24px " + fb; x.fillText("등 급", 0, 70); x.restore(); x.textAlign = "left";
-    /* 항목 막대 */
-    y = 900;
+    var x = c.getContext("2d"), t = P.types[res.type], PAD = 72, CW = W - PAD * 2;
+    var ink = "#191F28", muted = "#6B7684", surface = "#F2F4F6", line = "#E5E8EB", blue = "#3366F6", red = "#E8503E", green = "#22A06B";
+    var F = '"Pretendard Variable", Pretendard, "Noto Sans KR", sans-serif';
+    x.fillStyle = "#FFFFFF"; x.fillRect(0, 0, W, H);
+    x.textBaseline = "alphabetic";
+    /* 상단 */
+    x.fillStyle = muted; x.font = "600 28px " + F; x.fillText(P.title, PAD, 120);
+    x.fillStyle = muted; x.font = "600 30px " + F; x.fillText(P.ui.riskLabel, PAD, 220);
+    x.fillStyle = ink; x.font = "800 150px " + F; x.fillText(String(res.risk), PAD, 370);
+    var nw = x.measureText(String(res.risk)).width; x.font = "700 56px " + F; x.fillText("%", PAD + nw + 10, 370);
+    var bandColor = res.band.key === "danger" ? red : res.band.key === "warn" ? "#C47A00" : green;
+    var bandBg = res.band.key === "danger" ? "#FDEEEC" : res.band.key === "warn" ? "#FFF4E0" : "#E8F7EF";
+    x.font = "700 28px " + F; var bw = x.measureText(res.band.label).width + 48;
+    x.fillStyle = bandBg; rr(x, PAD, 400, bw, 56, 28); x.fill(); x.fillStyle = bandColor; x.fillText(res.band.label, PAD + 24, 439);
+    x.fillStyle = muted; x.font = "400 28px " + F; wrap(x, res.band.line, CW, 2).forEach(function (l, i) { x.fillText(l, PAD, 510 + i * 40); });
+    /* 유형 */
+    var y = 640;
+    x.fillStyle = surface; rr(x, PAD, y, CW, 300, 28); x.fill();
+    if (charImg) { var s = 236, r = Math.min(s / charImg.width, s / charImg.height), dw = charImg.width * r, dh = charImg.height * r; x.drawImage(charImg, W - PAD - 32 - dw, y + 32 + (s - dh) / 2, dw, dh); }
+    x.fillStyle = muted; x.font = "600 26px " + F; x.fillText(P.ui.typeLabel, PAD + 36, y + 72);
+    x.fillStyle = ink; x.font = "800 48px " + F; wrap(x, t.name, CW - 320, 2).forEach(function (l, i) { x.fillText(l, PAD + 36, y + 140 + i * 56); });
+    x.fillStyle = red; x.font = "600 28px " + F; wrap(x, res.weakLine || "", CW - 320, 2).forEach(function (l, i) { x.fillText(l, PAD + 36, y + 236 + i * 36); });
+    /* 참아주는 이유 / 손절 사유 */
+    y = 1000;
+    function block(title, items, color, maxItems) {
+      x.fillStyle = ink; x.font = "700 32px " + F; x.fillText(title, PAD, y); y += 52;
+      if (!items.length) { x.fillStyle = muted; x.font = "400 27px " + F; x.fillText(P.ui.cutsNone, PAD, y); y += 48; return; }
+      items.slice(0, maxItems).forEach(function (it) {
+        x.fillStyle = color; x.beginPath(); x.arc(PAD + 10, y - 10, 8, 0, Math.PI * 2); x.fill();
+        x.fillStyle = ink; x.font = "400 27px " + F;
+        wrap(x, it.text, CW - 44, 2).forEach(function (l, i) { x.fillText(l, PAD + 36, y + i * 36); });
+        y += 36 * Math.min(2, wrap(x, it.text, CW - 44).length) + 14;
+      });
+      y += 24;
+    }
+    block(P.ui.reasonsTitle, res.reasons, green, 2);
+    block(P.ui.cutsTitle, res.cuts, red, 2);
+    /* 항목별 (하단 고정) */
+    var by = H - 470;
+    x.fillStyle = ink; x.font = "700 32px " + F; x.fillText(P.ui.axesTitle, PAD, by); by += 44;
     P.axes.forEach(function (a) {
-      var n = res.no[a.k], cut = res.cuts.indexOf(a.k) > -1;
-      x.fillStyle = cut ? red : ink; x.font = "600 28px " + fb; x.fillText(a.name, PAD, y + 10);
-      var bx = PAD + 250, bw = W - PAD * 2 - 250 - 120;
-      x.fillStyle = line; x.fillRect(bx, y - 12, bw, 22);
-      x.fillStyle = cut ? red : ink; x.fillRect(bx, y - 12, bw * n / 9, 22);
-      x.font = "500 28px " + fm; x.textAlign = "right"; x.fillText("No." + n, W - PAD, y + 10); x.textAlign = "left";
-      x.fillStyle = muted; x.font = "400 22px " + fb; x.fillText(a.desc[n >= 7 ? 2 : n >= 4 ? 1 : 0] + " · " + P.grades.label(P.grades.order[res.gi[a.k]]) + (cut ? " · " + P.ui.cutHere : ""), bx, y + 44);
-      y += 84;
-    });
-    /* 깎인 이유 + 되받아치기 */
-    y += 10;
-    var cutline = res.cuts.length ? fill(P.ui.cutLine, { axes: res.cuts.map(function (k) { return axisOf(k).name; }).join(", "), grade: ro(P.grades.label(res.grade)) }) : P.ui.cutLineNone;
-    x.fillStyle = red; x.font = "700 30px " + fb;
-    wrap(x, cutline, W - PAD * 2, 2).forEach(function (l) { x.fillText(l, PAD, y); y += 42; });
-    if (res.callback) { y += 12; x.fillStyle = ink; x.font = "700 34px " + fd; wrap(x, "“" + res.callback + "”", W - PAD * 2, 2).forEach(function (l) { x.fillText(l, PAD, y); y += 48; }); }
-    y += 8; x.fillStyle = ink; x.font = "400 26px " + fb;
-    wrap(x, t.desc, W - PAD * 2, 3).forEach(function (l) { x.fillText(l, PAD, y); y += 37; });
-    /* 궁합: 하단에서 위로 고정 배치 (본문 길이와 무관) */
-    var py = H - 290;
-    x.fillStyle = line; x.fillRect(PAD, py - 40, W - PAD * 2, 2);
-    var colW = (W - PAD * 2 - 40) / 2;
-    [[P.ui.pairBest, P.types[t.best].name, t.bestWhy], [P.ui.pairWorst, P.types[t.worst].name, t.worstWhy]].forEach(function (p, i) {
-      var cx = PAD + i * (colW + 40), yy = py;
-      x.fillStyle = muted; x.font = "600 22px " + fb; x.fillText(p[0], cx, yy); yy += 34;
-      x.fillStyle = ink; x.font = "700 30px " + fd; x.fillText(p[1], cx, yy); yy += 36;
-      x.font = "400 22px " + fb; wrap(x, p[2], colW, 2).forEach(function (l) { x.fillText(l, cx, yy); yy += 30; });
+      var v = res.s[a.k], weak = res.weakAxis === a.k;
+      x.fillStyle = weak ? red : ink; x.font = "600 26px " + F; x.fillText(a.name, PAD, by + 8);
+      var bx = PAD + 110, bwid = CW - 110 - 90;
+      x.fillStyle = "#E9ECEF"; rr(x, bx, by - 12, bwid, 22, 11); x.fill();
+      x.fillStyle = weak ? red : blue; rr(x, bx, by - 12, Math.max(22, bwid * v / 8), 22, 11); x.fill();
+      x.fillStyle = muted; x.font = "500 24px " + F; x.textAlign = "right"; x.fillText(v + "/8", W - PAD, by + 8); x.textAlign = "left";
+      by += 52;
     });
     /* 하단 */
-    x.fillStyle = ink; x.fillRect(PAD, H - 120, W - PAD * 2, 3);
-    x.fillStyle = muted; x.font = "500 24px " + fm; x.fillText((CFG.BASE_URL || "").replace(/^https?:\/\//, ""), PAD, H - 76);
-    x.textAlign = "right"; x.font = "400 22px " + fb; x.fillText(P.ui.disclaimer + (CFG.CREDIT ? " · " + CFG.CREDIT : ""), W - PAD, H - 76); x.textAlign = "left";
+    x.fillStyle = line; x.fillRect(PAD, H - 130, CW, 2);
+    x.fillStyle = muted; x.font = "500 24px " + F; x.fillText((CFG.BASE_URL || "").replace(/^https?:\/\//, ""), PAD, H - 80);
+    x.textAlign = "right"; x.font = "400 22px " + F; x.fillText(P.ui.disclaimer + (CFG.CREDIT ? " · " + CFG.CREDIT : ""), W - PAD, H - 80); x.textAlign = "left";
     return c;
   }
   function renderCardImage(res) {
@@ -501,9 +475,10 @@
       return;
     }
     if (staticResult) {
-      var m = /^([a-z]+)-(1pp|1p|1|2|3)$/.exec(staticResult);
-      if (m && P.types[m[1]]) {
-        renderResult({ type: m[1], grade: gfromSlug(m[2]), cuts: [], no: {}, gi: {}, callback: "", trust: null, serial: "" }, { animate: false });
+      var m = /^([a-z]+)-([a-z]+)$/.exec(staticResult);
+      if (m && P.types[m[1]] && bandByKey(m[2])) {
+        var b = bandByKey(m[2]);
+        renderResult({ type: m[1], band: b, risk: Math.round((b.max + (P.bands.indexOf(b) ? P.bands[P.bands.indexOf(b) - 1].max : 0)) / 2), weakLine: "", reasons: [], cuts: [], s: {}, trust: null, serial: "", code: "" }, { animate: false });
         show("result"); return;
       }
     }
@@ -513,9 +488,9 @@
     if (window.INSUNG_PACKS && window.INSUNG_PACKS[PACK_ID]) return boot(window.INSUNG_PACKS[PACK_ID]);
     var s = document.createElement("script"); s.src = ROOT + "packs/" + PACK_ID + ".js";
     s.onload = function () { boot(window.INSUNG_PACKS[PACK_ID]); };
-    s.onerror = function () { $("intro").innerHTML = '<p class="muted">콘텐츠를 불러오지 못했습니다. 새로고침해 주세요.</p>'; };
+    s.onerror = function () { $("intro").innerHTML = '<p class="muted">내용을 불러오지 못했어요. 새로고침해 주세요.</p>'; };
     document.head.appendChild(s);
   }
-  window.INSUNG = { judge: function (p) { return judge(p); }, encode: encode, gslug: gslug, pack: function () { return P; } };
+  window.INSUNG = { judge: function (p) { return judge(p); }, encode: encode, pack: function () { return P; }, keyOf: function (r) { return r.type + "-" + r.band.key; } };
   loadPack();
 })();

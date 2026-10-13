@@ -1,5 +1,5 @@
 /* ============================================================
-   인성 등급판정소 — 배포 설정
+   인성 손절 테스트 — 배포 설정
    이 파일만 고치면 배포 환경이 바뀝니다. 콘텐츠는 packs/ 에 있습니다.
    ============================================================ */
 window.INSUNG_CONFIG = {
@@ -7,7 +7,7 @@ window.INSUNG_CONFIG = {
   BASE_URL: "https://insung.example.com",
 
   /* 현재 활성 콘텐츠팩. 시즌판은 packs/ 에 파일을 추가하고 여기만 바꿉니다 */
-  PACK: "insung-v1",
+  PACK: "sonjeol-v1",
 
   /* Google Apps Script 웹앱 URL. 비우면 로깅·투표 집계를 보내지 않습니다
      action: "complete" (등급·부위·판정번호) / "vote" (선택) / "share" (방식) */
@@ -30,16 +30,16 @@ window.INSUNG_CONFIG = {
     adsense_client: ""
   },
 
-  /* 쿠팡 파트너스 "판정 부위 주문하기" 위젯. 부위 키별로 위젯 ID를 넣습니다.
-     비어 있는 부위는 위젯을 숨깁니다. 고지 문구는 위젯 바로 위에 자동 표시 */
+  /* 쿠팡 파트너스 위젯. 유형 키별로 위젯 ID를 넣습니다 (예: 사과할 때 주는 선물 큐레이션).
+     비어 있는 유형은 위젯을 숨깁니다. 고지 문구는 위젯 바로 위에 자동 표시 */
   COUPANG: {
     enabled: false,
     tracking: "",
-    widgets: { yangji: "", udun: "", ansim: "", deungsim: "", satae: "", galbi: "", chadol: "", salchi: "" }
+    widgets: { care: "", honest: "", calm: "", sense: "", keeper: "", cactus: "", fast: "", halo: "" }
   },
 
-  /* 희소성 표시. 출시 1주 뒤 실집계로 채웁니다. 비어 있으면 표시하지 않습니다.
-     예: { total: 48210, grades: { "1++": 0.14, "1+": 0.26, "1": 0.31, "2": 0.19, "3": 0.10 } } */
+  /* 희소성·투표 표시. 출시 1주 뒤 실집계로 채웁니다. 비어 있으면 표시하지 않습니다.
+     예: { total: 48210, grades: { safe: 0.18, ok: 0.41, warn: 0.29, danger: 0.12 }, vote: { read: 0.63, unread: 0.37 } } */
   STATS: null,
 
   /* 2차 기능: 친구가 대신 판정 (GAS에 "peer" action 추가 후 true) */
@@ -48,7 +48,7 @@ window.INSUNG_CONFIG = {
   /* 결과 아래 '다른 테스트' 목록 */
   MORE_TESTS: [
     { title: "고래 MBTI", desc: "나와 닮은 고래는?", url: "https://tastyulsan.netlify.app" },
-    { title: "송년회 인성 등급판정", desc: "12월 오픈 예정", url: "", soon: true }
+    { title: "송년회 손절 테스트", desc: "12월 오픈 예정", url: "", soon: true }
   ],
 
   /* 제작 크레딧 (카드 하단) */
