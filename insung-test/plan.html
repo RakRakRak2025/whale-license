@@ -179,7 +179,12 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
       <li><a href="#s11">전국 타겟 전환</a></li>
       <li><a href="#s12">수익화 설계</a></li>
       <li><a href="#s13">제작 비용</a></li>
-      <li><a href="#s14">출처</a></li>
+      <li><a href="#s15">제작 산출물과 구조</a></li>
+      <li><a href="#s16">참여 유도 심리 설계</a></li>
+      <li><a href="#s17">인스타 신규 계정 운영</a></li>
+      <li><a href="#s18">구글·외부 서비스 연결</a></li>
+      <li><a href="#s19">에셋 제작 현황</a></li>
+      <li><a href="#s20">출처</a></li>
     </ol>
   </nav>
 </header>
@@ -204,9 +209,9 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
         <tr><th>만드는 법</th><td>테스트 HTML 1장 + 결과 페이지 40장(등급 5 × 부위 8, 각자 미리보기·광고 지면) + 카드 이미지 40장. 서버 없이 시작하고 집계만 GA4와 GAS로 받습니다. 호스팅은 고래 퍼널과 분리합니다.</td></tr>
         <tr><th>이슈 가능성</th><td>터질 조건은 갖췄지만 보장은 없습니다. 현실적인 기대치는 커뮤니티 히트(완주 5만~15만)이고, 그 이상은 첫 3일 시딩과 운이 정합니다 (10장).</td></tr>
         <tr><th>수익</th><td>광고 클릭을 유도하는 구조는 정책 위반이라 안 되고, 노출과 문맥 맞춤 상품으로 법니다. 기본 가정에서 세션당 약 3.1원: <b>10만 세션 약 31만 원, 100만 세션 약 311만 원</b>. 큰돈은 이 테스트를 포트폴리오로 받는 브랜드 협업 제작에서 나옵니다 (12장).</td></tr>
-        <tr><th>제작 비용</th><td>이미지 생성(GPT Image 2) 약 1.1만 원, 호스팅 0원, Claude 사용량은 이번 기획 세션의 1~1.5배 (13장).</td></tr>
+        <tr><th>제작 비용</th><td>이미지는 Higgsfield 크레딧 약 7 (잔여 약 965), 호스팅 0원. 제작은 이번 세션에서 배포 직전 단계까지 끝냈습니다 (15장, 19장).</td></tr>
         <tr><th>목표</th><td>완주율 85% 이상, 공유율 20% 이상 (W컨셉×푸망 실측 89.8%, 업계 가이드 20%)</td></tr>
-        <tr><th>다음 할 일</th><td>① 문항·결과 카피 확정 ② 캐릭터·카드 시안 ③ 카카오 애드핏 신청, 쿠팡 파트너스 가입 (AdSense는 트래픽 생긴 뒤 신청) ④ 출시 시점 결정 (11월 초 출시 → 12월 송년회 시즌판 권장)</td></tr>
+        <tr><th>다음 할 일</th><td>① Higgsfield에서 캐릭터 12장 내려받아 assets/ 에 넣기 ② 도메인 정하고 config.js 의 BASE_URL 입력 ③ 카카오 JS 키·애드핏·쿠팡 파트너스 발급 ④ Cloudflare Pages 배포 후 카톡·인스타 실기기 점검 ⑤ 새 인스타 계정 생성 후 2주 워밍업 (17장)</td></tr>
       </tbody>
     </table>
   </div>
@@ -883,9 +888,198 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
   </div>
 </section>
 
-<!-- 14 -->
-<section id="s14">
-  <h2>14. 출처</h2>
+<!-- 15 -->
+<section id="s15">
+  <h2>15. 제작 산출물과 구조</h2>
+  <p>이번 세션에서 배포 직전 단계까지 만들었습니다. 엔진과 콘텐츠를 분리해서, 시즌판은 콘텐츠팩 파일 하나만 추가하면 됩니다.</p>
+  <div class="tbl wide">
+    <table>
+      <thead><tr><th>파일</th><th>역할</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td class="k">index.html</td><td>첫 화면 + 테스트. 기본 OG 태그</td><td>완료</td></tr>
+        <tr><td class="k">app.js</td><td>엔진. 문항 진행, 채점(최저등급제·부위 규칙·신뢰도), 판정 연출, 결과 카드(DOM + 1080×1920 캔버스), 카톡·Web Share·링크 복사, 인앱 브라우저 대응, 광고 슬롯 마운트, 쿠팡 위젯, 투표, GA4·GAS 로깅</td><td>완료 · 크로미움 자동 테스트 통과</td></tr>
+        <tr><td class="k">app.css</td><td>종이 확인서 룩. 폰 폭 480px 단일 컬럼, 하단 고정 공유 바</td><td>완료</td></tr>
+        <tr><td class="k">config.js</td><td>배포 설정: 주소, 활성 팩, GAS, GA4, 카카오 키, 광고 슬롯 3개, 쿠팡 위젯 8개, 통계, 다른 테스트 목록</td><td>키 입력 전</td></tr>
+        <tr><td class="k">packs/insung-v1.js</td><td>콘텐츠팩: 항목 5, 문항 11(선택지마다 판정사 즉시 반응 + 되받아치기), 중간 메모, 등급 5, 부위 8, 궁합, 공유 문구, 투표, 화면 문구</td><td>완료 · 카피 검수 대기</td></tr>
+        <tr><td class="k">build.js</td><td><span class="num">pages</span>: 결과 페이지 40장(결과별 OG) · <span class="num">cards</span>: 결과 카드 PNG + 기본 OG 이미지 렌더</td><td>완료</td></tr>
+        <tr><td class="k">r/*.html</td><td>결과 페이지 40장. 카톡 미리보기가 결과별로 다르게 뜨는 이유. 광고 지면이자 페이지뷰</td><td>생성됨</td></tr>
+        <tr><td class="k">assets/cards/*.png</td><td>결과 카드 34장 (규칙상 불가능한 6개 조합 제외). 캐릭터 이미지를 넣은 뒤 다시 렌더</td><td>자리 표시로 렌더됨</td></tr>
+        <tr><td class="k">gas/Code.gs</td><td>집계 스크립트. complete·vote·share 시트 적재, 등급 분포 집계 함수</td><td>완료</td></tr>
+        <tr><td class="k">README.md</td><td>배포 순서, 에셋 파일명, 실기기 점검 항목, 등급 변환표 재보정</td><td>완료</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sub">
+    <h3>15-1. 차후 개편을 위한 설계</h3>
+    <ul class="plain">
+      <li><b>콘텐츠팩 교체.</b> 송년회 편은 <span class="num">packs/insung-yearend.js</span> 를 만들고 <span class="num">config.PACK</span> 만 바꿉니다. 엔진 수정 없음.</li>
+      <li><b>결과 코드.</b> 답변 11개가 <span class="num">?a=13020312203</span> 처럼 주소에 실립니다. 같은 주소를 열면 같은 카드가 재현되고, 이름 같은 개인정보는 없습니다.</li>
+      <li><b>친구 판정(2차).</b> <span class="num">config.PEER_ENABLED</span> 와 GAS <span class="num">peer</span> action 추가로 켭니다. 결과 화면에 버튼 자리가 이미 있습니다.</li>
+      <li><b>희소성·참여자 수.</b> <span class="num">config.STATS</span> 에 집계값을 넣으면 첫 화면과 카드에 자동 표시. GAS의 <span class="num">stats()</span> 가 값을 만듭니다.</li>
+      <li><b>광고.</b> 슬롯 3개(첫 화면 하단·결과 중간·결과 하단)는 설정만으로 애드핏↔애드센스 전환. 문항·판정 화면에는 슬롯 자체가 없습니다.</li>
+      <li><b>등급 분포 조정.</b> 팩의 <span class="num">map</span> 배열 9개 숫자만 바꾸면 됩니다.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 16 -->
+<section id="s16">
+  <h2>16. 참여 유도 심리 설계</h2>
+  <p>화면마다 어떤 장치를 왜 넣었는지입니다. 전부 구현되어 있습니다.</p>
+  <div class="tbl wide">
+    <table>
+      <thead><tr><th>화면</th><th>장치</th><th>노리는 것</th></tr></thead>
+      <tbody>
+        <tr><td class="k" rowspan="4">첫 화면</td><td>"문항 11개, 2분 · 이름·연락처 안 받음 · 결과는 카드로 저장" 3줄</td><td>비용을 먼저 보여주면 시작 결정이 쉬워집니다. 개인정보 안 받는다는 말이 신뢰를 만듭니다</td></tr>
+        <tr><td>"다섯 항목 중 가장 낮은 등급이 최종" 한 줄 규칙</td><td>규칙이 가혹하다는 걸 미리 알면 낮은 등급도 억울함으로 소비됩니다</td></tr>
+        <tr><td>"지금까지 N명 판정" (실집계 후)</td><td>사회적 증거. 가짜 숫자는 안 씁니다</td></tr>
+        <tr><td>"재미로 만든 판정" 고지</td><td>낙인 반감을 미리 낮춥니다</td></tr>
+        <tr><td class="k" rowspan="5">문항</td><td>1탭 = 1문항, 되돌아가기 링크</td><td>마찰 최소. 되돌아갈 수 있으면 선택 불안이 줄어 완주율이 오릅니다</td></tr>
+        <tr><td>선택 직후 판정사 한 줄 반응 ("슬쩍 미는 손, 봤습니다.")</td><td>지켜보고 있다는 감각. 다음 문항의 반응이 궁금해지는 변동 보상</td></tr>
+        <tr><td>처음 빠르고 나중에 느린 진행바</td><td>무작위 실험 32건 메타분석에서 이 방식만 이탈을 줄였습니다 (Villar 2013)</td></tr>
+        <tr><td>항목 이름을 도장 라벨로 표시 ("배려 마블링")</td><td>채점 항목이 보이면 테스트가 아니라 심사처럼 느껴집니다</td></tr>
+        <tr><td>6번 뒤 판정사 메모 "벌써 한 군데 깎였습니다. 어디인지는 끝까지 가면 압니다"</td><td>미완성 과제를 끝내고 싶어지는 효과(자이가르닉). 중간 이탈 방지</td></tr>
+        <tr><td class="k" rowspan="3">판정 연출</td><td>항목 5개가 순서대로 차오르고 No.가 찍힘, 깎인 항목만 빨강</td><td>기대 고조. 결과를 한 번에 주지 않습니다</td></tr>
+        <tr><td>"최저등급제 적용 중" 0.6초 정지</td><td>규칙 적용 순간을 체감시켜 억울함의 근거를 만듭니다</td></tr>
+        <tr><td>도장 낙하 + 진동 + 한 줄 ("난리났습니다." / "양념이 필요합니다.")</td><td>절정 순간. 경험은 절정과 끝으로 기억됩니다(피크엔드)</td></tr>
+        <tr><td class="k" rowspan="8">결과</td><td>부위(정체성) → 등급 도장(비교) 순서</td><td>드러내고 싶은 정체성을 먼저, 비교 거리를 그다음에</td></tr>
+        <tr><td>"여기서 깎임" 빨간 줄 + 깎인 이유 문장</td><td>공유 문구의 재료. 억울함은 자랑보다 올리기 쉽습니다</td></tr>
+        <tr><td>되받아치기 ("'맛있어요' 하고 물 세 컵, 다 셌습니다.")</td><td>내 답을 기억한 문장. 일반론이 아니라 나한테 하는 말로 읽힙니다</td></tr>
+        <tr><td>같은 불판 추천/금지 + "양지인 친구한테 보내기" 버튼</td><td>공유가 곧 특정 친구 태그가 됩니다. 관계형 결과가 공유 상위를 독식합니다</td></tr>
+        <tr><td>판정 신뢰도 "의심 (착한 척 감지)"</td><td>취업 인성검사 패러디. 웃음 + 자조라 낮은 결과도 올릴 수 있습니다</td></tr>
+        <tr><td>하단 고정 공유 바 (카톡 · 카드 저장 · 다른 앱)</td><td>스크롤 어디서나 공유. 광고보다 위. 결과 페이지에서 가장 많이 쓰인 기능이 공유였습니다 (W컨셉)</td></tr>
+        <tr><td>번외 투표 "추가 반찬 500원" + 실제 조사 수치</td><td>두 번째 참여. 댓글이 붙는 소재. 1주 뒤 카드뉴스 재료</td></tr>
+        <tr><td>"송년회 인성 등급판정 · 12월 오픈 예정"</td><td>재방문 예고. 유행 수명이 짧아서 다음 편 존재를 미리 심습니다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">* 넣지 않은 것: 가짜 참여자 수, 가짜 희소성 %, 결과 잠금, 광고 시청 보상. 신뢰를 깎거나 광고 정책에 걸립니다.</p>
+</section>
+
+<!-- 17 -->
+<section id="s17">
+  <h2>17. 인스타 신규 계정 운영</h2>
+  <div class="sub">
+    <h3>17-1. 같은 집, 다른 폰에서 새 계정 — 안전한가</h3>
+    <p><b>안전합니다.</b> 인스타그램은 한 기기에서 계정 5개까지 추가해 전환하는 걸 공식 기능으로 제공합니다. Meta의 계정 무결성 정책 어디에도 "같은 Wi-Fi·IP·집·기기의 복수 계정"을 위반으로 보는 조항이 없습니다. 실제 제재 사유는 둘입니다.</p>
+    <ol class="plain">
+      <li>이미 제재된 계정과 소유를 공유하거나, 제재를 피하려고 만든 계정</li>
+      <li>스팸·자동화·가짜 참여·조직적 비진정 행위</li>
+    </ol>
+    <p>그러니 맛있는울산 계정에 제재 이력이 없으면 위치나 기기는 변수가 아닙니다. <b>새 계정 첫 2주의 행동이 리스크를 정합니다.</b> 남는 불확실성은 "한 계정이 위반하면 연결된 계정도 검토될 수 있다"는 공식 조항과, 2026년 봄 사용자들이 보고한 원인 불명 대량 정지(Meta 확인 없음) 정도입니다.</p>
+  </div>
+  <div class="sub">
+    <h3>17-2. 계정 연결은 하는 게 유리</h3>
+    <p>기존 계정에 로그인된 상태에서 "계정 추가"로 만들면 이메일·전화번호가 공유됩니다. Meta가 설계한 정식 경로이고, 비밀번호 복구·2단계 인증·이의신청 경로가 확보됩니다. 가상번호·VPN·에뮬레이터는 의심 신호로 취급된다는 보고가 많으니 쓰지 않습니다. 단, 한쪽이 위반하면 다른 쪽도 검토되므로 <b>양쪽 모두 깨끗하게</b>가 전제입니다.</p>
+  </div>
+  <div class="sub">
+    <h3>17-3. 2주 워밍업</h3>
+    <div class="tbl mid">
+      <table>
+        <thead><tr><th>시점</th><th>할 일</th></tr></thead>
+        <tbody>
+          <tr><td class="k">생성 당일</td><td>프로필 완성(프사·소개·프로필 링크에 테스트 주소), 2단계 인증. 팔로우·DM·댓글 폭주 금지</td></tr>
+          <tr><td class="k">1~3일</td><td>하루 1개 이하 게시(릴스 권장). 탐색·관련 콘텐츠 소수 좋아요만</td></tr>
+          <tr><td class="k">4~14일</td><td>하루 1개 게시. 캡션·이미지 전부 원본. 같은 문구·같은 링크 반복 금지. 팔로우는 하루 수십 건 이내, 팔로우-언팔로우 반복 금지</td></tr>
+          <tr><td class="k">프로페셔널 전환 후</td><td>'계정 상태'를 3일에 한 번 확인. 추천 적격 여부가 유일한 공식 지표 (섀도우밴이라는 공식 개념은 없음)</td></tr>
+          <tr><td class="k">기존 계정 활용</td><td>맛있는울산과 <b>Collab 게시물</b> 1~2회(공식 기능, 양쪽 피드에 배포). 스토리 멘션 + 링크 스티커. 본인 계정끼리 Collab 금지 조항은 없음</td></tr>
+          <tr><td class="k">링크 스티커</td><td>신규 계정은 처음엔 안 보일 수 있음(기간 미공개). 프로필 링크로 대체, 보이면 사용. 기존 계정은 바로 사용 가능</td></tr>
+          <tr><td class="k">스레드</td><td>새 인스타 계정으로 자동 생성. 같은 콘텐츠를 텍스트+이미지로 재가공. 링크 본문 삽입은 공식 입장상 불이익 없음</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="sub">
+    <h3>17-4. 하면 안 되는 것</h3>
+    <ul class="plain">
+      <li>팔로워·좋아요 구매, 자동 팔로우·댓글 앱, 로그인 정보 제3자 제공</li>
+      <li>대량 팔로우/언팔로우, 복붙 댓글, 같은 링크를 댓글·DM에 반복</li>
+      <li>VPN·프록시·에뮬레이터로 위치·기기 위장</li>
+      <li>정지됐던 계정의 이메일·전화번호·기기로 새 계정 생성 (공식 "제재 회피")</li>
+      <li>두 계정을 한 폰에서 분 단위로 번갈아 전환하며 서로 댓글·좋아요 주고받기</li>
+      <li>커뮤니티에서 일반 유저인 척 "이거 해봤는데" 위장 시딩 (커뮤니티 규정 + 추천보증 지침상 위장 후기)</li>
+    </ul>
+  </div>
+  <div class="sub">
+    <h3>17-5. 커뮤니티 시딩</h3>
+    <div class="tbl wide">
+      <table>
+        <thead><tr><th>채널</th><th>운영자 직접 홍보</th><th>이용자 결과 공유</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr><td class="k">더쿠</td><td>불가 (본인 제작 콘텐츠·SNS 홍보 명시 금지)</td><td>링크 포함 시 삭제 위험</td><td>가장 엄격</td></tr>
+          <tr><td class="k">클리앙</td><td>직접홍보 게시판만, 유료 (7일 44,000원)</td><td>연관성 없는 링크는 홍보성 간주</td><td></td></tr>
+          <tr><td class="k">에펨코리아</td><td>불가 (셀프 홍보·목적성 가입 차단 사례)</td><td>관행상 존재, 규정 원문 미확인</td><td></td></tr>
+          <tr><td class="k">디시인사이드</td><td>갤러리별 상이. 상업 홍보 명백 시 즉시 차단 갤러리 다수</td><td>관련 갤러리 자발 공유는 흔함</td><td></td></tr>
+          <tr><td class="k">X</td><td>가능</td><td>가능. 결과 이미지 + 링크는 답글에</td><td>링크 페널티 제거 공식 발언, 데이터는 상충</td></tr>
+          <tr><td class="k">스레드</td><td>가능</td><td>가능</td><td>링크 다운랭크 없음 (공식)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">* 결론: 커뮤니티는 운영자 홍보글이 아니라 이용자가 자기 결과를 올리고 싶게 만드는 카드로 뚫습니다. 운영자가 직접 올릴 땐 제작자임을 밝힙니다. 브랜드 공식 계정이 자기 테스트를 홍보하는 건 통상적 자사 홍보라 추천보증 지침상 문제가 없습니다. 위험한 건 일반 유저인 척하거나, 인플루언서에게 대가를 주고 표시를 빼는 경우입니다.</p>
+  </div>
+</section>
+
+<!-- 18 -->
+<section id="s18">
+  <h2>18. 구글·외부 서비스 연결</h2>
+  <div class="tbl wide">
+    <table>
+      <thead><tr><th>서비스</th><th>용도</th><th>이 세션에서 연결 여부</th><th>해야 할 것</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Google Drive</td><td>GAS 집계 시트 보관, 에셋 보관</td><td>연결됨 (tjdfkr4081@ 드라이브 읽기 확인)</td><td>없음</td></tr>
+        <tr><td class="k">Gmail · Calendar</td><td>(이 프로젝트엔 불필요)</td><td>연결됨</td><td>없음</td></tr>
+        <tr><td class="k">Google Apps Script</td><td>complete·vote·share 로깅, 등급 분포 집계</td><td>Claude가 직접 배포 불가</td><td>시트 만들고 <span class="num">gas/Code.gs</span> 붙여넣기 → 웹앱 배포 → URL을 config.js 에</td></tr>
+        <tr><td class="k">GA4</td><td>완주율·공유율·부위별 공유율</td><td>연결 안 됨 (Claude 접근 경로 없음)</td><td>속성 생성 → 측정 ID를 config.js 에. 커스텀 파라미터(grade, type, method)는 맞춤 측정기준으로 등록</td></tr>
+        <tr><td class="k">AdSense</td><td>결과 페이지 광고, 앵커·비네트</td><td>연결 안 됨</td><td>트래픽이 생긴 뒤 사이트 심사 신청. 승인 후 ca-pub ID와 슬롯 ID</td></tr>
+        <tr><td class="k">카카오 애드핏</td><td>출시 직후 광고 (심사 영업일 1~2일)</td><td>연결 안 됨</td><td>매체 등록 → 광고단위 3개 발급 → config.js</td></tr>
+        <tr><td class="k">카카오 디벨로퍼스</td><td>카톡 공유 (JS SDK)</td><td>연결 안 됨</td><td>앱 생성 → JavaScript 키 → 플랫폼 Web에 도메인 등록</td></tr>
+        <tr><td class="k">쿠팡 파트너스</td><td>부위별 상품 위젯</td><td>연결 안 됨</td><td>가입 → 부위별 위젯 8개 생성 → ID를 config.js. 공식 수수료표 확인</td></tr>
+        <tr><td class="k">Cloudflare Pages</td><td>호스팅 (고래 퍼널과 분리)</td><td>연결 안 됨</td><td>저장소 연결 또는 폴더 업로드. 무료</td></tr>
+        <tr><td class="k">Higgsfield</td><td>캐릭터 이미지 생성</td><td>연결됨 (잔여 크레딧 약 965)</td><td>생성된 12장을 라이브러리에서 내려받아 assets/ 에 파일명 맞춰 저장</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">* 계정 생성·심사·키 발급은 전부 브라우저에서 본인이 해야 하는 작업입니다. Claude는 코드와 설정 자리를 준비해 두었습니다.</p>
+</section>
+
+<!-- 19 -->
+<section id="s19">
+  <h2>19. 에셋 제작 현황</h2>
+  <div class="sub">
+    <h3>19-1. 만든 것</h3>
+    <div class="tbl wide">
+      <table>
+        <thead><tr><th>단계</th><th>내용</th><th>비용</th></tr></thead>
+        <tbody>
+          <tr><td class="k">스타일 탐색</td><td>갈비 캐릭터를 4가지 스타일로: ① 스티커(굵은 외곽선·플랫) ② 클레이 3D ③ 잉크·수채 ④ 픽셀. GPT Image 2.5 (Higgsfield 경유)</td><td class="num">1 크레딧</td></tr>
+          <tr><td class="k">선택</td><td><b>① 스티커.</b> 결과 카드 안 96px 크기에서도 읽히고, 크림 종이 위에 깨끗하게 얹힙니다. 카톡 이모티콘 문법이라 공유물로 익숙합니다</td><td></td></tr>
+          <tr><td class="k">캐릭터 세트</td><td>①을 참조 이미지로 걸고 중품질·투명 배경으로 12장: 부위 8종(양지·우둔·안심·등심·사태·갈비·차돌박이·살치살), 판정사 3종(기본·도장 찍기·한숨), 첫 화면 히어로(4:3)</td><td class="num">약 6 크레딧</td></tr>
+          <tr><td class="k">코드로 만든 것</td><td>결과 카드 34장, 기본 OG 이미지, 등급 도장, 막대그래프. 한글은 전부 코드로 그려서 깨지지 않습니다</td><td class="num">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>이 작업 환경은 Higgsfield 결과 파일 호스트로의 다운로드가 막혀 있어서, 이미지는 Higgsfield 라이브러리에서 직접 내려받아야 합니다. 파일명은 아래로 맞춥니다.</p>
+    <ul class="plain small">
+      <li><span class="num">assets/char-yangji.png · char-udun.png · char-ansim.png · char-deungsim.png · char-satae.png · char-galbi.png · char-chadol.png · char-salchi.png</span></li>
+      <li><span class="num">assets/judge.png</span> (기본) · 도장 찍기·한숨 버전은 릴스·스토리 소재용</li>
+      <li><span class="num">assets/hero.png</span></li>
+    </ul>
+    <p class="small">넣은 뒤 <span class="num">node build.js cards</span> 를 다시 돌리면 카드 34장과 OG 이미지에 캐릭터가 들어갑니다. 마음에 안 드는 캐릭터는 같은 프롬프트로 다시 뽑으면 되고, 장당 0.5 크레딧입니다.</p>
+  </div>
+  <div class="sub">
+    <h3>19-2. 시딩 콘텐츠용 추가 생성 (선택)</h3>
+    <ul class="plain small">
+      <li>부위별 "1++ 손님 vs 3등급 손님" 2컷 (릴스 썸네일) 8장</li>
+      <li>판정사가 결과지 들고 있는 세로(9:16) 컷 3장 (스토리 배경)</li>
+      <li>문항 상황 일러스트 11장 (카드뉴스)</li>
+    </ul>
+    <p class="small">합쳐도 15 크레딧 안쪽입니다.</p>
+  </div>
+</section>
+
+<!-- 20 -->
+<section id="s20">
+  <h2>20. 출처</h2>
   <p class="note">수치는 웹 검색 결과 요약을 기준으로 정리했고, 이번 작업 환경에서는 기사 원문을 열어 대조하지 못했습니다. 외부에 인용할 수치는 아래 원문에서 한 번 더 확인해 주세요.</p>
   <div class="tbl mid">
     <table>
@@ -911,6 +1105,7 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
         <tr><th>광고 정책</th><td><a href="https://support.google.com/adsense/answer/1346295">AdSense 광고 배치 정책</a> · <a href="https://support.google.com/publisherpolicies/answer/11112688">콘텐츠 없는 화면</a> · <a href="https://support.google.com/adsense/answer/13956167?hl=en">비네트 광고</a> · <a href="https://support.google.com/adsense/answer/2660562?hl=en">무효 트래픽</a> · <a href="https://adfit.kakao.com/web/html/use_kakao.html">카카오 애드핏 운영정책</a></td></tr>
         <tr><th>단가·제휴</th><td><a href="https://calcnara.com/calculators/adsense-revenue">AdSense 수익 계산기 (추정치)</a> · <a href="https://demoday.co.kr/tools/blog-income">카테고리별 RPM (추정치)</a> · <a href="https://calcnara.com/calculators/coupang-partners">쿠팡 파트너스 계산기</a> · <a href="https://shinkim.com/kor/media/newsletter/2613">추천보증 심사지침 개정</a> · <a href="https://poomang.com/collaboration">푸망 협업</a> · <a href="https://taboola.com/resources/case-studies/wikitree">위키트리 추천 위젯 사례</a></td></tr>
         <tr><th>제작 비용</th><td><a href="https://yingtu.ai/ko/blog/gpt-image-2-cost-per-image">GPT Image 2 장당 비용</a> · <a href="https://docs.gmicloud.ai/model-quickstarts/image/gpt-image-2-generate.md">GPT Image 2 단가표</a> · <a href="https://netli.fyi/blog/netlify-free-plan-limits-2026">Netlify 무료 플랜 2026</a> · <a href="https://temps.sh/blog/cloudflare-pages-free-tier-limits-2026">Cloudflare Pages 무료 한도</a> · <a href="https://developers.cloudflare.com/changelog/post/2026-01-23-pages-file-limit-increase/">Pages 파일 수 한도</a> · <a href="https://claude.com/pricing">Claude 플랜</a> · <a href="https://code.claude.com/docs/en/costs">Claude Code 사용량</a></td></tr>
+        <tr><th>인스타 계정 운영</th><td><a href="https://help.instagram.com/iphone-app/1696686240613595">계정 5개 추가 (Instagram 고객센터)</a> · <a href="https://transparency.meta.com/policies/community-standards/account-integrity">Meta 계정 무결성 정책</a> · <a href="https://www.meta.com/en-gb/help/accounts-center/589288436078759/">Accounts Center</a> · <a href="https://help.instagram.com/539126347315373">계정 상태·추천 적격</a> · <a href="https://help.instagram.com/291200585956732">Collab 게시물</a> · <a href="https://www.searchenginejournal.com/instagram-links-stories/425075/">링크 스티커 개방 (2021)</a> · <a href="https://theqoo.net/sf9/1383792790">더쿠 홍보 금지 공지</a> · <a href="https://www.clien.net/service/board/rule/10707409">클리앙 규칙</a> · <a href="https://www.socialmediatoday.com/news/meta-says-link-posts-ranked-properly-threads-reach/750126/">스레드 링크 랭킹</a> · <a href="https://buffer.com/resources/links-on-x/">X 링크 데이터</a></td></tr>
         <tr><th>법무</th><td><a href="https://www.taxwatch.co.kr/article/tax/2020/06/26/0001">경품 제세공과금</a> · <a href="https://www.segye.com/newsView/20250611516170">테무 과징금</a> · <a href="https://newstomato.com/ReadNews.aspx?no=744860">홈플러스 경품 개인정보</a> · <a href="https://www.ajunews.com/view/20251202085042877">추천보증 심사지침</a> · <a href="https://www.kocca.kr/n_content/vol24/subp/issue_hotTrend3.html">퍼블리시티권</a></td></tr>
       </tbody>
     </table>
