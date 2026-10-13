@@ -142,6 +142,18 @@ ul.plain, ol.plain { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
 .vote { border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 8px; }
 .vote-q { font-weight: 700; }
 .toast { font-size: 12.5px; color: var(--accent); min-height: 1em; }
+.calc { display: grid; gap: 16px; border: 1px solid var(--fg); padding: 16px; }
+.calc-presets { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+.calc-presets .btn { min-height: 40px; padding: 8px 16px; font-size: 13.5px; text-align: center; }
+.calc-presets .btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(136px, 1fr)); gap: 16px; }
+.calc-grid label { display: grid; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.calc-grid input { font: inherit; font-family: var(--f-mono); font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); padding: 8px; width: 100%; min-width: 0; }
+.calc-out { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; border-top: 1px solid var(--line); padding-top: 16px; }
+.calc-out div { display: grid; gap: 0; }
+.calc-out span { font-size: 12px; color: var(--muted); }
+.calc-out b { font-family: var(--f-mono); font-size: 18px; font-variant-numeric: tabular-nums; }
+.calc-out .total b { color: var(--accent); }
 textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; border: 1px solid var(--line); background: var(--soft); color: var(--fg); resize: none; }
 </style>
 </head>
@@ -163,7 +175,11 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
       <li><a href="#s7">런칭·확산 플랜</a></li>
       <li><a href="#s8">KPI·측정</a></li>
       <li><a href="#s9">리스크·가드레일</a></li>
-      <li><a href="#s10">출처</a></li>
+      <li><a href="#s10">이슈 될까: 판단</a></li>
+      <li><a href="#s11">전국 타겟 전환</a></li>
+      <li><a href="#s12">수익화 설계</a></li>
+      <li><a href="#s13">제작 비용</a></li>
+      <li><a href="#s14">출처</a></li>
     </ol>
   </nav>
 </header>
@@ -183,10 +199,14 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
             <li><b>비교할 등급 + 억울한 사연.</b> 등급은 친구와 바로 비교되고, 최저등급제 때문에 "어디서 깎였는지"가 결과에 찍힙니다. 깎인 이유가 댓글과 태그를 부릅니다.</li>
           </ol>
         </td></tr>
-        <tr><th>브랜드 적합</th><td>문항 10개 중 8개가 식당·밥자리 장면입니다. 결과는 소고기 부위 8종, 낮은 등급은 "양념하면 다 맛있다, 언양불고기처럼"으로 받습니다. 결과 화면에 울산 맛집 연결 자리가 자연스럽게 생깁니다.</td></tr>
-        <tr><th>만드는 법</th><td>정적 HTML 1장 + 결과 카드 PNG 40장(등급 5 × 부위 8) + 부위별 미리보기 페이지 8장. 서버 없이 시작하고 집계만 GA4와 GAS로 받습니다.</td></tr>
+        <tr><th>타겟</th><td><b>전국.</b> 음식·밥자리 매너는 지역을 타지 않는 소재입니다. 브랜드는 「인성 등급판정소」 단독으로 내고 맛있는울산은 제작 크레딧으로만 둡니다 (10장).</td></tr>
+        <tr><th>소재 적합</th><td>문항 10개 중 8개가 식당·밥자리 장면입니다. 결과가 소고기 부위라 "판정 부위 주문하기" 같은 상품 연결이 자연스럽게 붙습니다.</td></tr>
+        <tr><th>만드는 법</th><td>테스트 HTML 1장 + 결과 페이지 40장(등급 5 × 부위 8, 각자 미리보기·광고 지면) + 카드 이미지 40장. 서버 없이 시작하고 집계만 GA4와 GAS로 받습니다. 호스팅은 고래 퍼널과 분리합니다.</td></tr>
+        <tr><th>이슈 가능성</th><td>터질 조건은 갖췄지만 보장은 없습니다. 현실적인 기대치는 커뮤니티 히트(완주 5만~15만)이고, 그 이상은 첫 3일 시딩과 운이 정합니다 (10장).</td></tr>
+        <tr><th>수익</th><td>광고 클릭을 유도하는 구조는 정책 위반이라 안 되고, 노출과 문맥 맞춤 상품으로 법니다. 기본 가정에서 세션당 약 3.1원: <b>10만 세션 약 31만 원, 100만 세션 약 311만 원</b>. 큰돈은 이 테스트를 포트폴리오로 받는 브랜드 협업 제작에서 나옵니다 (12장).</td></tr>
+        <tr><th>제작 비용</th><td>이미지 생성(GPT Image 2) 약 1.1만 원, 호스팅 0원, Claude 사용량은 이번 기획 세션의 1~1.5배 (13장).</td></tr>
         <tr><th>목표</th><td>완주율 85% 이상, 공유율 20% 이상 (W컨셉×푸망 실측 89.8%, 업계 가이드 20%)</td></tr>
-        <tr><th>다음 할 일</th><td>① 문항·결과 카피 확정 ② 카드 디자인 시안 ③ 번외 이벤트용 제휴 식당 2~3곳 섭외 ④ 출시 시점 결정 (11월 초 출시 → 12월 송년회 시즌판 권장)</td></tr>
+        <tr><th>다음 할 일</th><td>① 문항·결과 카피 확정 ② 캐릭터·카드 시안 ③ 카카오 애드핏 신청, 쿠팡 파트너스 가입 (AdSense는 트래픽 생긴 뒤 신청) ④ 출시 시점 결정 (11월 초 출시 → 12월 송년회 시즌판 권장)</td></tr>
       </tbody>
     </table>
   </div>
@@ -467,7 +487,7 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
       <span class="step">결과 카드</span><span class="arr">→</span>
       <span class="step">공유 바 (카톡 · 이미지 저장 · 링크)</span><span class="arr">→</span>
       <span class="step">번외 투표: 반찬 리필</span><span class="arr">→</span>
-      <span class="step">다음: 고래 MBTI · 이 부위 맛집</span>
+      <span class="step">다음: 판정 부위 주문하기 · 다른 테스트</span>
     </div>
     <p class="note">* 진행바는 처음에 빠르고 나중에 느리게 차오르게 합니다. 무작위 실험 32건 메타분석(Villar 외 2013)에서 이 방식만 이탈을 줄였습니다.</p>
     <p class="note">* 공유 바는 광고·맛집 연결보다 위에 둡니다. W컨셉 사례에서 광고 클릭이 많은 유형은 공유가 적었습니다.</p>
@@ -496,7 +516,7 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
         <tbody>
           <tr><td class="num">1</td><td><b>결과별 PNG를 미리 만들어 &lt;img&gt;로 보여주고 "길게 눌러 저장" 안내</b></td><td>카톡·인스타 인앱 웹뷰는 JS로 만든 파일 다운로드가 안 됨 (카카오 데브톡, WebKit 버그). 고래 MBTI 퍼널의 결과 이미지 매핑(WHALE_IMGS)과 같은 방식</td></tr>
           <tr><td class="num">2</td><td><b>카카오톡 공유 버튼</b> (Kakao.Share.sendDefault, 결과별 이미지·문구)</td><td>주 유입이 카톡 인앱</td></tr>
-          <tr><td class="num">3</td><td><b>부위별 정적 미리보기 페이지 8장</b> (/r/galbi.html 등, og 태그 직접 기입)</td><td>카카오 스크랩 서버는 JS를 실행하지 않음. 쿼리만 바꾸면 미리보기가 전부 같아짐</td></tr>
+          <tr><td class="num">3</td><td><b>결과별 정적 페이지 40장</b> (/r/galbi-1.html 등, og 태그 직접 기입)</td><td>카카오 스크랩 서버는 JS를 실행하지 않음. 쿼리만 바꾸면 미리보기가 전부 같아짐</td></tr>
           <tr><td class="num">4</td><td><b>모든 결과를 드러내고 싶은 라벨로</b></td><td>좋은 결과일수록 더 공유 (Huber 2017). 정체성 신호로 공유 (Berger &amp; Heath 2007)</td></tr>
           <tr><td class="num">5</td><td><b>궁합 + "친구한테 보내서 확인"</b></td><td>관계형 결과가 공유 상위 독식 (2022 트렌드 리포트). 인스타는 DM 공유를 비팔로워 도달 신호로 봄 (Mosseri 2025)</td></tr>
           <tr><td class="num">6</td><td><b>문항 11개, 2분 안쪽, 문항당 1탭</b></td><td>W컨셉 11문항 2분 완주 89.8%. 평균 11.8문항</td></tr>
@@ -536,7 +556,7 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
 
   <div class="sub">
     <h3>6-4. 번외 투표: 반찬 리필</h3>
-    <p>결과 아래 1문항 투표 "추가 반찬 500원, 낸다 vs 안 간다". 투표하면 실제 조사 결과(엠브레인: 유료화 거부감 64.8%)를 보여줍니다. 댓글 거리를 만드는 장치이고, 1주 뒤 "울산 사람들의 판결" 카드뉴스 소재가 됩니다.</p>
+    <p>결과 아래 1문항 투표 "추가 반찬 500원, 낸다 vs 안 간다". 투표하면 실제 조사 결과(엠브레인: 유료화 거부감 64.8%)를 보여줍니다. 댓글 거리를 만드는 장치이고, 1주 뒤 "대한민국의 판결" 카드뉴스 소재가 됩니다.</p>
   </div>
 </section>
 
@@ -547,11 +567,11 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
     <table>
       <thead><tr><th>시점</th><th>할 일</th><th>산출물</th></tr></thead>
       <tbody>
-        <tr><td class="k">D-14 ~ D-8</td><td>카피 확정, 카드 PNG 40장 생성, 부위별 미리보기 8장, 인앱 실기기 점검 (카톡·인스타 × iOS·Android)</td><td>테스트 HTML, PNG 40, OG 8</td></tr>
-        <tr><td class="k">D-7 ~ D-1</td><td>시딩 콘텐츠 제작. 제휴 식당 사장님 인터뷰가 핵심</td><td>릴스 ① "울산 사장님이 뽑은 1++ 손님" ② "배려 No.9인데 2등급 받은 사람" 스케치 ③ 판정사 소개. 카드뉴스 "추가 반찬 500원, 낸다 vs 안 간다"</td></tr>
-        <tr><td class="k">D-day</td><td>인스타 피드 + 스토리 링크 스티커, 카카오톡 채널, 스레드·X 동시 발행</td><td>W컨셉 사례에선 X 확산이 가장 활발</td></tr>
-        <tr><td class="k">D+1 ~ D+14</td><td>스토리 인증 이벤트. 경품은 <b>건당 5만 원 이하</b> 제휴 식당 식사권을 여러 명에게</td><td>5만 원 초과 시 제세공과금 22% 원천징수, 당첨자 인적사항 수집 부담</td></tr>
-        <tr><td class="k">D+7</td><td>1주 집계 리포트 "울산 사람들은 어디서 제일 많이 깎였나". 이 시점부터 희소성 % 노출</td><td>실데이터 카드뉴스 (2차 파도)</td></tr>
+        <tr><td class="k">D-14 ~ D-8</td><td>카피 확정, 캐릭터 생성, 카드·결과 페이지 40장 생성, 애드핏·쿠팡 연결, 인앱 실기기 점검 (카톡·인스타 × iOS·Android)</td><td>테스트 HTML, 결과 페이지 40, 카드 40</td></tr>
+        <tr><td class="k">D-7 ~ D-1</td><td>시딩 콘텐츠 제작. 식당 사장님 인터뷰가 핵심 (지역 무관)</td><td>릴스 ① "사장님들이 뽑은 1++ 손님" ② "배려 No.9인데 2등급 받은 사람" 스케치 ③ 판정사 소개. 카드뉴스 "추가 반찬 500원, 낸다 vs 안 간다"</td></tr>
+        <tr><td class="k">D-day</td><td>인스타 피드 + 스토리 링크 스티커, 카카오톡 채널, 스레드·X 동시 발행. 전국 커뮤니티 결과 인증글 (각 커뮤니티 홍보 규정 확인)</td><td>W컨셉 사례에선 X 확산이 가장 활발</td></tr>
+        <tr><td class="k">D+1 ~ D+14</td><td>스토리 인증 이벤트. 경품은 <b>건당 5만 원 이하</b> 전국 사용 모바일 상품권을 여러 명에게</td><td>5만 원 초과 시 제세공과금 22% 원천징수, 당첨자 인적사항 수집 부담</td></tr>
+        <tr><td class="k">D+7</td><td>1주 집계 리포트 "대한민국은 어디서 제일 많이 깎였나". 이 시점부터 희소성 % 노출</td><td>실데이터 카드뉴스 (2차 파도)</td></tr>
         <tr><td class="k">D+14</td><td>친구 대신 판정 모드 오픈</td><td>GAS action 추가</td></tr>
         <tr><td class="k">12월</td><td>시즌판 "송년회 인성 등급판정" (회식 2차·정산·건배사 문항으로 교체)</td><td>수명 1주짜리 유행을 시즌판으로 재점화</td></tr>
       </tbody>
@@ -598,6 +618,8 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
         <tr><td class="k">저작권·초상</td><td>실존 인물·타 캐릭터 금지. 폰트 웹 임베딩 라이선스 확인. AI 생성 이미지는 사람이 검수 (선관위 홍보영상 사례)</td></tr>
         <tr><td class="k">가짜 희소성</td><td>실집계 전에는 % 표시 안 함</td></tr>
         <tr><td class="k">인앱 공유 깨짐</td><td>배포 전 카톡·인스타 × iOS·Android 실기기 점검. 고래 퍼널의 인앱 대응(viewport 교정, 외부 브라우저 안내 바) 재사용. 이미지 교체 시 파일명 변경 (카카오 썸네일 캐시는 지워지지 않음)</td></tr>
+        <tr><td class="k">트래픽 폭주로 사이트 정지</td><td>Netlify 신규 무료 플랜은 크레딧 소진 시 팀의 모든 사이트를 멈춤. 고래 퍼널과 다른 호스팅(Cloudflare Pages 등)에 올림 (13-3)</td></tr>
+        <tr><td class="k">광고 정책 위반</td><td>클릭 유도·버튼 옆 배치·결과 잠금·새로고침 금지. 지인에게 클릭 부탁 금지. 위반 시 계정 영구 비활성화 가능 (12-4)</td></tr>
         <tr><td class="k">결과가 너무 낮게 나옴</td><td>등급 변환표를 출시 1주 로그로 재보정 (목표 분포 4-2 참고)</td></tr>
       </tbody>
     </table>
@@ -606,7 +628,264 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
 
 <!-- 10 -->
 <section id="s10">
-  <h2>10. 출처</h2>
+  <h2>10. 이슈 될까: 판단</h2>
+  <p>컨셉은 터질 조건을 갖췄습니다. 다만 바이럴은 기획만으로 정해지지 않습니다. <b>첫 3일 시딩과 공유율이 결과를 정하고, 그 이상은 운입니다.</b> 2022년 1~8월에만 신규 심리테스트가 1.7만 건 넘게 나왔고(월 2천 건 이상), 공유는 상위 소수에 몰립니다.</p>
+
+  <div class="sub">
+    <h3>10-1. 강점과 약점</h3>
+    <div class="tbl wide">
+      <table>
+        <thead><tr><th>강점</th><th>근거</th><th>약점·불확실</th><th>대응</th></tr></thead>
+        <tbody>
+          <tr><td>밥상 매너 테스트는 빈자리</td><td>사례 조사에서 0건</td><td>시작 계정의 전국 도달력이 약함</td><td>X·커뮤니티 결과 인증글로 시작. 자체 계정은 보조</td></tr>
+          <tr><td>진지한 제도를 비튼 패러디</td><td>SBTI 2026.4</td><td>'근내지방도·최저등급제'는 낯선 사람이 많음</td><td>첫 화면에 한 줄 설명. 결과에서 "여기서 깎임"으로 바로 체감</td></tr>
+          <tr><td>등급 비교 + 깎인 이유</td><td>점수형·희귀성 밈 (매너온도 99도, Wrapped top 1%)</td><td>'인성 등급'이라는 말에 반감 가능</td><td>고기 등급 패러디임을 전면에, 모든 결과 호감형 (9장)</td></tr>
+          <tr><td>음식은 전국 공통 소재</td><td>두쫀쿠 25.9만, 흑백요리사 테스트</td><td>유행 수명 3일~1주</td><td>12월 송년회 시즌판으로 재점화</td></tr>
+          <tr><td>궁합으로 친구 태그 유도</td><td>관계형이 공유 상위 5%의 52.9%</td><td>공유율 20%는 업계 상위 수준</td><td>공유 바 최상단, 결과별 카톡 미리보기</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>10-2. 숫자로 보는 바이럴: 시드 × 공유 계수(K)</h3>
+    <p class="small">K = 공유율 × 공유 1번이 데려오는 완주자 수. 예를 들어 공유율 25%에 공유 1번당 3.4명이 들어와 끝까지 하면 K = 0.85입니다. 총 완주자는 대략 시드 ÷ (1 − K)로 커집니다.</p>
+    <div class="tbl mid">
+      <table>
+        <thead><tr><th>처음 들어온 사람 (시드)</th><th>K 0.3</th><th>K 0.6</th><th>K 0.85</th></tr></thead>
+        <tbody>
+          <tr><td>3천 명 (자체 계정·지인)</td><td class="num">약 4,300</td><td class="num">약 7,500</td><td class="num">약 2만</td></tr>
+          <tr><td>2만 명 (커뮤니티·X 시딩 성공)</td><td class="num">약 2.9만</td><td class="num">약 5만</td><td class="num">약 13만</td></tr>
+          <tr><td>10만 명 (인플루언서·방송 노출)</td><td class="num">약 14만</td><td class="num">약 25만</td><td class="num">약 67만</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">* 공식 자체는 단순화한 계산입니다. 실제로는 시간이 갈수록 K가 떨어집니다.</p>
+  </div>
+
+  <div class="sub">
+    <h3>10-3. 시나리오 (판단)</h3>
+    <div class="tbl mid">
+      <table>
+        <thead><tr><th>시나리오</th><th>조건</th><th>예상 완주자</th></tr></thead>
+        <tbody>
+          <tr><td class="k">조용히 끝남</td><td>자체 계정과 지인 공유만. K 0.3 안팎</td><td>수천 명</td></tr>
+          <tr class="pick"><td class="k">커뮤니티 히트</td><td>X와 커뮤니티 2~3곳에서 결과 인증이 돌고 K 0.6 이상</td><td>5만~15만</td></tr>
+          <tr><td class="k">전국 유행</td><td>인플루언서·방송 노출 + K 0.85 이상. 테토/에겐은 SNL 노출이 기폭제였음</td><td>50만 이상 (드묾)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">* 확률은 근거 자료가 없어 붙이지 않았습니다. 현실적인 목표는 두 번째 줄입니다.</p>
+  </div>
+</section>
+
+<!-- 11 -->
+<section id="s11">
+  <h2>11. 전국 타겟 전환</h2>
+  <div class="tbl wide">
+    <table>
+      <thead><tr><th>항목</th><th>지역 타겟 (기존 초안)</th><th>전국 타겟 (변경)</th></tr></thead>
+      <tbody>
+        <tr><td class="k">브랜드 노출</td><td>맛있는울산 전면</td><td>「인성 등급판정소」 단독. 맛있는울산은 카드 하단 제작 크레딧</td></tr>
+        <tr><td class="k">결과 아래 연결</td><td>울산 맛집</td><td>쿠팡 파트너스 "판정 부위 주문하기" + 다른 테스트 목록</td></tr>
+        <tr><td class="k">시딩 채널</td><td>지역 커뮤니티</td><td>X, 인스타, 스레드, 전국 커뮤니티 결과 인증글, 카톡</td></tr>
+        <tr><td class="k">1주 리포트</td><td>울산 사람들의 판결</td><td>"대한민국은 어디서 제일 많이 깎였나" 실집계</td></tr>
+        <tr><td class="k">이벤트 경품</td><td>제휴 식당 식사권</td><td>전국 사용 모바일 상품권 (건당 5만 원 이하)</td></tr>
+        <tr><td class="k">지역 기능 (선택)</td><td>없음</td><td>시·도 선택 후 "우리 지역 1++ 비율". 지역 대결은 확산력이 크지만 비하 댓글 위험이 커서 <b>상위 지역만 공개, 하위 순위는 비공개</b></td></tr>
+        <tr><td class="k">3등급 문구</td><td>언양불고기</td><td>유지. 전국에서 통하는 음식 이름이라 소소한 정체성으로 남김</td></tr>
+        <tr><td class="k">호스팅</td><td>Netlify (고래 퍼널과 같은 팀)</td><td>별도 호스팅. 폭주 시 고래 퍼널까지 멈추는 사고 방지 (13-3)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 12 -->
+<section id="s12">
+  <h2>12. 수익화 설계</h2>
+
+  <div class="sub">
+    <h3>12-1. "광고 클릭이 최대한 많이 나오는 웹앱"이 되나</h3>
+    <p><b>클릭을 유도하는 방식으로는 안 되고, 그렇게 해서도 안 됩니다.</b> AdSense와 카카오 애드핏 모두 클릭 유도, 버튼 옆 배치, 광고로 결과 잠그기, 자동 새로고침을 금지합니다. 걸리면 계정이 영구 비활성화되고 미지급 수익도 날아갈 수 있습니다.</p>
+    <p>대신 이 테스트는 정책 안에서 수익을 키우기 좋은 구조입니다. 결과가 <b>고기 부위</b>라서 "갈비형 → 갈비 상품"처럼 문맥이 맞는 상품을 붙일 수 있습니다. 결과 화면이 따로 40장이라 페이지뷰도 자연스럽게 늘어납니다. 푸망×W컨셉 사례에서도 클릭은 배너를 누른 게 아니라 <b>결과에 맞는 혜택을 받으러 간 행동</b>이었습니다 (결과 페이지 광고 클릭률 8.6%, 푸망 평균 3~5%).</p>
+  </div>
+
+  <div class="sub">
+    <h3>12-2. 수익원 4층</h3>
+    <div class="tbl wide">
+      <table>
+        <thead><tr><th>층</th><th>수익원</th><th>위치·방식</th><th>시작 조건</th></tr></thead>
+        <tbody>
+          <tr><td class="k">1</td><td><b>디스플레이 광고</b> (카카오 애드핏 → AdSense)</td><td>결과 페이지 본문 아래 1개, 하단 1개. AdSense 승인 후 앵커(하단 고정)와 비네트(페이지 이동 시 전면) 자동광고만 켬</td><td>애드핏 심사 영업일 1~2일. AdSense는 콘텐츠·트래픽 심사가 있어 트래픽이 생긴 뒤 신청</td></tr>
+          <tr><td class="k">2</td><td><b>쿠팡 파트너스 "판정 부위 주문하기"</b></td><td>결과 카드 아래 위젯 1개. 갈비형 → 갈비, 차돌박이형 → 차돌박이처럼 부위별 큐레이션. 고지 문구는 위젯 바로 위에 크게</td><td>가입 즉시. 클릭 후 24시간 구매분에 수수료 (최대 약 3%, 공식표 확인 필요)</td></tr>
+          <tr><td class="k">3</td><td><b>다른 테스트 목록</b> (내부 링크)</td><td>결과 하단. 시즌판, 고래 MBTI 등. 세션당 페이지뷰를 늘려 1층 수익을 키움</td><td>즉시. 광고 카드와 디자인을 확실히 다르게</td></tr>
+          <tr><td class="k">4</td><td><b>브랜드 협업</b> (정육·밀키트·외식 브랜드)</td><td>"판정소 공식 정육점" 스폰서, 결과별 쿠폰. 다음 테스트를 브랜드 맞춤으로 제작 의뢰받기</td><td>트래픽 실적이 생긴 뒤. 단가는 공개 사례 없음. 푸망은 최소 5만 플레이 보장형으로 판매</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>12-3. 화면별 광고 배치</h3>
+    <div class="tbl wide">
+      <table>
+        <thead><tr><th>화면</th><th>광고</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><td class="k">첫 화면</td><td>시작 버튼 아래, 150px 이상 띄워 배너 1개 (선택)</td><td>버튼 근처 배치는 실수 클릭 위험. 구글은 조작 버튼과 150px 이상 간격을 권고</td></tr>
+          <tr><td class="k">문항 11개</td><td><b>없음</b></td><td>선택지 버튼과 겹침. 완주율(목표 85%)이 전체 수익의 바닥</td></tr>
+          <tr><td class="k">판정 연출</td><td><b>없음</b></td><td>"분석 중" 화면은 구글의 '콘텐츠 없는 화면' 광고 금지에 해당할 위험</td></tr>
+          <tr><td class="k">결과 페이지로 이동</td><td>비네트 (AdSense 자동광고)</td><td>결과를 별도 주소로 나눴기 때문에 생기는 정상 노출 기회. 빈도는 기본 10분</td></tr>
+          <tr><td class="k">결과 페이지</td><td>카드 → <b>공유 바</b> → 쿠팡 부위 위젯 → 설명 본문 → 광고 1 → 번외 투표 → 다른 테스트 목록 → 광고 2 → 앵커</td><td>공유 바를 광고보다 위에. W컨셉 사례에서 광고 클릭이 많은 유형은 공유가 적었음. 공유가 곧 다음 방문자</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>12-4. 정책 가드레일</h3>
+    <div class="tbl mid">
+      <table>
+        <thead><tr><th>하지 않음</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><td>"광고 보면 결과 공개", "광고 누르면 등급 상승"</td><td>클릭 유도 금지. 광고로 콘텐츠를 열려면 AdSense 공식 Offerwall만 가능</td></tr>
+          <tr><td>단톡·인스타에 "광고 한 번씩 눌러줘", 본인 클릭</td><td>무효 트래픽. 계정 영구 비활성화 사유</td></tr>
+          <tr><td>문항 넘길 때마다 같은 광고 다시 불러오기</td><td>AdSense·애드핏 모두 새로고침 금지</td></tr>
+          <tr><td>광고를 '다시하기/공유' 버튼처럼 꾸미거나 바로 옆에 두기, 화살표 강조</td><td>혼동 배치 금지</td></tr>
+          <tr><td>쿠팡 고지를 빼거나 페이지 끝·작은 글씨로</td><td>추천보증 심사지침 (2024.12.1 시행): 첫 부분에 잘 보이게</td></tr>
+          <tr><td>애드핏을 한 페이지에 5개 이상</td><td>애드핏은 페이지당 4개 초과 시 게재 불가</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>12-5. 수익 계산기</h3>
+    <div class="calc" id="calc">
+      <div class="calc-presets">
+        <span class="muted">가정</span>
+        <button class="btn" type="button" data-preset="low" aria-pressed="false">보수</button>
+        <button class="btn" type="button" data-preset="base" aria-pressed="true">기본</button>
+        <button class="btn" type="button" data-preset="high" aria-pressed="false">낙관</button>
+        <span class="muted">세션</span>
+        <button class="btn" type="button" data-sess="10000">1만</button>
+        <button class="btn" type="button" data-sess="100000">10만</button>
+        <button class="btn" type="button" data-sess="1000000">100만</button>
+      </div>
+      <div class="calc-grid">
+        <label for="c_sess">세션 (방문)<input id="c_sess" type="number" min="0" step="1000" value="100000"></label>
+        <label for="c_comp">완주율 %<input id="c_comp" type="number" min="0" max="100" step="1" value="90"></label>
+        <label for="c_pv">세션당 페이지뷰<input id="c_pv" type="number" min="0" step="0.1" value="2.5"></label>
+        <label for="c_rpm1">AdSense 페이지 RPM (원)<input id="c_rpm1" type="number" min="0" step="50" value="800"></label>
+        <label for="c_rpm2">애드핏 RPM (원)<input id="c_rpm2" type="number" min="0" step="50" value="300"></label>
+        <label for="c_ctr">쿠팡 위젯 클릭률 %<input id="c_ctr" type="number" min="0" step="0.1" value="1.5"></label>
+        <label for="c_conv">구매 전환율 %<input id="c_conv" type="number" min="0" step="0.5" value="3"></label>
+        <label for="c_aov">평균 주문액 (원)<input id="c_aov" type="number" min="0" step="1000" value="30000"></label>
+        <label for="c_rate">수수료율 %<input id="c_rate" type="number" min="0" step="0.5" value="3"></label>
+      </div>
+      <div class="calc-out" aria-live="polite">
+        <div><span>AdSense</span><b id="o_ads">-</b></div>
+        <div><span>애드핏</span><b id="o_fit">-</b></div>
+        <div><span>쿠팡 파트너스</span><b id="o_cp">-</b></div>
+        <div class="total"><span>합계</span><b id="o_tot">-</b></div>
+        <div><span>세션당</span><b id="o_per">-</b></div>
+      </div>
+    </div>
+    <div class="tbl mid">
+      <table>
+        <thead><tr><th>세션</th><th>보수</th><th>기본</th><th>낙관</th></tr></thead>
+        <tbody>
+          <tr><td>1만</td><td class="num">약 0.6만 원</td><td class="num">약 3.1만 원</td><td class="num">약 10만 원</td></tr>
+          <tr><td>10만</td><td class="num">약 6만 원</td><td class="num">약 31만 원</td><td class="num">약 102만 원</td></tr>
+          <tr><td>100만</td><td class="num">약 61만 원</td><td class="num">약 311만 원</td><td class="num">약 1,022만 원</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="plain small">
+      <li><b>가정값의 근거.</b> 한국 엔터 장르의 AdSense·애드핏 실측 RPM은 공개 자료가 없습니다. 블로그 계산기 범위(일상 300원~일반 1,500원)에서 엔터 장르라 낮춰 잡은 추정입니다. 쿠팡 전환율·주문액은 계산기 가정값(3%, 3만 원)입니다. <b>출시 2주 실데이터로 바꿔 넣어야 하는 숫자들입니다.</b></li>
+      <li><b>판단.</b> 광고·제휴 수익은 대박이 나도 수백만 원대입니다. 이 테스트의 진짜 값은 "전국에서 N만 명이 한 테스트"라는 실적이고, 그 실적으로 브랜드 협업 테스트 제작을 수주하는 게 더 큰 돈입니다. 맛있는울산의 기존 B2B 영업과도 맞물립니다.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 13 -->
+<section id="s13">
+  <h2>13. 제작 비용</h2>
+
+  <div class="sub">
+    <h3>13-1. Claude 사용량</h3>
+    <p>Anthropic은 사용 한도를 토큰 수로 공개하지 않습니다. 5시간 세션 한도와 주간 한도가 있고 플랜 간 배수만 나와 있습니다. 서브에이전트도 같은 한도에서 차감됩니다. 그래서 <b>이번 기획 세션을 1로 놓고</b> 제작 규모를 비교합니다. 이번 세션에서 가장 많이 쓴 건 리서치 에이전트 5개(합계 약 91만 토큰 처리)였습니다.</p>
+    <div class="tbl mid">
+      <table>
+        <thead><tr><th>작업</th><th>규모 (이번 기획 = 1)</th></tr></thead>
+        <tbody>
+          <tr><td>배포용 테스트 본체 (문항·채점·결과·공유·GA4·광고 자리)</td><td class="num">0.4~0.6</td></tr>
+          <tr><td>결과 페이지 40장 + 카드 이미지 40장 자동 생성 스크립트</td><td class="num">0.2~0.3</td></tr>
+          <tr><td>애드핏·쿠팡 코드 연결, 정책 점검</td><td class="num">약 0.1</td></tr>
+          <tr><td>인앱 실기기 점검 후 수정 2~3라운드</td><td class="num">0.3~0.5</td></tr>
+          <tr><td>이미지 생성 프롬프트 작성 (생성은 GPT에서)</td><td class="num">약 0.05</td></tr>
+          <tr><td><b>합계</b></td><td class="num"><b>약 1~1.5</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="plain small">
+      <li><b>내 주간 한도의 몇 %인지 보는 법.</b> 데스크톱 앱 모델 선택기 옆 사용량 링, 또는 CLI의 <span class="num">/usage</span>(7일 보기)에서 이번 세션 전후 사용률을 보고 위 배수를 곱하면 됩니다.</li>
+      <li><b>아끼는 법.</b> 리서치는 끝났으니 제작 때는 서브에이전트를 거의 안 씁니다. 반복 작업(페이지·이미지 40장)은 스크립트 한 번으로 만들고, 스크린샷 검수 횟수를 정해 둡니다.</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <h3>13-2. 이미지 생성 (GPT Image 2 연계)</h3>
+    <div class="tbl wide">
+      <table>
+        <thead><tr><th>에셋</th><th>최종 장수</th><th>생성 횟수 (시도 포함)</th><th>품질</th></tr></thead>
+        <tbody>
+          <tr><td>스타일 탐색</td><td class="num">-</td><td class="num">20</td><td>저품질</td></tr>
+          <tr><td>부위 캐릭터 8종</td><td class="num">8</td><td class="num">40</td><td>중품질</td></tr>
+          <tr><td>판정사 캐릭터 (기본 + 표정 3)</td><td class="num">4</td><td class="num">20</td><td>중품질</td></tr>
+          <tr><td>첫 화면 히어로</td><td class="num">1</td><td class="num">6</td><td>중품질</td></tr>
+          <tr><td>최종본 고화질 재생성·일관성 편집</td><td class="num">13</td><td class="num">20</td><td>고품질</td></tr>
+          <tr><td><b>합계</b></td><td class="num"><b>13</b></td><td class="num"><b>106</b></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tbl mid">
+      <table>
+        <thead><tr><th>방식</th><th>장당 단가 (세로 1024×1536)</th><th>106회 비용 (+입력·참조 이미지 30% 여유)</th></tr></thead>
+        <tbody>
+          <tr class="pick"><td class="k">권장 조합 (위 표대로)</td><td>저 $0.005 / 중 $0.041 / 고 $0.165</td><td class="num">약 $7.9 ≈ 1.1만 원</td></tr>
+          <tr><td class="k">전부 중품질</td><td>$0.041</td><td class="num">약 $5.7 ≈ 0.8만 원</td></tr>
+          <tr><td class="k">전부 고품질</td><td>$0.165</td><td class="num">약 $22.7 ≈ 3.2만 원</td></tr>
+          <tr><td class="k">ChatGPT 구독 안에서 수작업</td><td>추가 비용 없음</td><td>일일 생성 한도(비공식 보고마다 다름) 때문에 2~3일, 다운로드·정리 수작업</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="plain small">
+      <li><b>AI로 만들지 않는 것 (0원).</b> 결과 카드 40장, 결과 페이지 미리보기 40장, 등급 도장, 막대그래프는 캐릭터 위에 코드로 합성합니다. 한글 글자는 AI 이미지에 넣지 않습니다. 생성 이미지 속 한글은 자주 깨집니다.</li>
+      <li><b>일관성.</b> 첫 캐릭터 1장을 확정한 뒤 그 이미지를 참조로 나머지 7종을 만듭니다. 고기 조각에 얼굴을 붙인 귀여운 캐릭터로 가고, 사람 몸을 고기로 그리는 표현은 피합니다.</li>
+      <li>단가는 OpenAI 공식 예시를 인용한 제3자 정리(2026.5~9) 기준이고, 환율은 1달러 1,400원으로 가정했습니다. 결제 전 공식 가격표를 확인하세요.</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <h3>13-3. 호스팅·기타</h3>
+    <div class="tbl wide">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th><th>비용</th></tr></thead>
+        <tbody>
+          <tr><td class="k">트래픽 추정</td><td>완주자 1명당 우리 서버에서 약 0.3~0.8MB (HTML, 캐릭터·카드 이미지. 폰트·광고는 외부). 10만 명이면 30~80GB, 100만 명이면 0.3~0.8TB</td><td>-</td></tr>
+          <tr><td class="k">Netlify (현재 고래 퍼널)</td><td>2025년 9월 이후 무료 플랜은 크레딧제. 대역폭이 월 15~30GB 수준으로 정리되고(자료마다 다름), 크레딧이 떨어지면 <b>팀의 모든 사이트가 다음 달까지 정지</b>. 10만 명 단위면 넘을 수 있음</td><td>무료지만 위험</td></tr>
+          <tr><td class="k">Cloudflare Pages (권장)</td><td>무료 플랜 정적 파일 요청 무제한으로 알려짐 (공식 문서 확인 필요). 사이트당 파일 2만 개, 파일당 25MiB 제한이라 결과 페이지 40장은 문제없음</td><td class="num">0원</td></tr>
+          <tr><td class="k">도메인</td><td>기존 맛있는울산 도메인의 하위 주소를 쓰면 추가 비용 없음. 전국 브랜드용 새 도메인은 선택</td><td>0원 ~ 연 몇만 원</td></tr>
+          <tr><td class="k">이벤트 경품</td><td>건당 5만 원 이하 × 인원. 예산은 따로 정함</td><td>선택</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><b>손익분기.</b> 현금 비용은 이미지 약 1.1만 원이 거의 전부입니다. 기본 가정(세션당 약 3.1원)이면 <b>세션 약 3,500회에서 회수</b>되고, 그 뒤는 사람 시간이 실제 비용입니다.</p>
+  </div>
+</section>
+
+<!-- 14 -->
+<section id="s14">
+  <h2>14. 출처</h2>
   <p class="note">수치는 웹 검색 결과 요약을 기준으로 정리했고, 이번 작업 환경에서는 기사 원문을 열어 대조하지 못했습니다. 외부에 인용할 수치는 아래 원문에서 한 번 더 확인해 주세요.</p>
   <div class="tbl mid">
     <table>
@@ -628,6 +907,10 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
         <tr><th>공유 심리</th><td><a href="https://kgajos.seas.harvard.edu/papers/huber17effect.pdf">Huber 외 2017</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3361411/">Tamir &amp; Mitchell 2012</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5358393">Scholz 외 2017</a> · <a href="https://faculty.wharton.upenn.edu/wp-content/uploads/2012/04/Divergence.pdf">Berger &amp; Heath 2007</a> · <a href="https://www.annenbergpublicpolicycenter.org/people-select-feedback-to-flatter-others-except-when-they-dislike-them/">Albarracín 2025</a></td></tr>
         <tr><th>완주·진행바</th><td><a href="https://research.google/pubs/where-am-i-a-meta-analysis-of-experiments-on-the-effects-of-progress-indicators-for-web-surveys/">Villar 외 2013</a> · <a href="https://www.surveymonkey.com/curiosity/survey_questions_and_completion_rates/">SurveyMonkey</a> · <a href="https://blog.amp.dev/2016/09/08/new-study-speedmatters-for-mobile-user-engagement-and-revenue/">Google 로딩 연구</a></td></tr>
         <tr><th>기술</th><td><a href="https://developers.kakao.com/docs/latest/kakaotalk-share/js-link">카카오 공유 문서</a> · <a href="https://devtalk.kakao.com/t/og-image/150621">카카오 썸네일 캐시</a> · <a href="https://devtalk.kakao.com/t/topic/146168">카톡 인앱 다운로드</a> · <a href="https://bugs.webkit.org/show_bug.cgi?id=216918">WebKit blob 버그</a> · <a href="https://web.dev/articles/web-share">Web Share</a> · <a href="https://www.socialmediatoday.com/news/instagram-shares-algorithm-insights-2025/738034/">Mosseri 2025</a> · <a href="https://developers.google.com/apps-script/quotas">Apps Script 쿼터</a></td></tr>
+        <tr><td colspan="2" class="eyebrow">수익화·비용</td></tr>
+        <tr><th>광고 정책</th><td><a href="https://support.google.com/adsense/answer/1346295">AdSense 광고 배치 정책</a> · <a href="https://support.google.com/publisherpolicies/answer/11112688">콘텐츠 없는 화면</a> · <a href="https://support.google.com/adsense/answer/13956167?hl=en">비네트 광고</a> · <a href="https://support.google.com/adsense/answer/2660562?hl=en">무효 트래픽</a> · <a href="https://adfit.kakao.com/web/html/use_kakao.html">카카오 애드핏 운영정책</a></td></tr>
+        <tr><th>단가·제휴</th><td><a href="https://calcnara.com/calculators/adsense-revenue">AdSense 수익 계산기 (추정치)</a> · <a href="https://demoday.co.kr/tools/blog-income">카테고리별 RPM (추정치)</a> · <a href="https://calcnara.com/calculators/coupang-partners">쿠팡 파트너스 계산기</a> · <a href="https://shinkim.com/kor/media/newsletter/2613">추천보증 심사지침 개정</a> · <a href="https://poomang.com/collaboration">푸망 협업</a> · <a href="https://taboola.com/resources/case-studies/wikitree">위키트리 추천 위젯 사례</a></td></tr>
+        <tr><th>제작 비용</th><td><a href="https://yingtu.ai/ko/blog/gpt-image-2-cost-per-image">GPT Image 2 장당 비용</a> · <a href="https://docs.gmicloud.ai/model-quickstarts/image/gpt-image-2-generate.md">GPT Image 2 단가표</a> · <a href="https://netli.fyi/blog/netlify-free-plan-limits-2026">Netlify 무료 플랜 2026</a> · <a href="https://temps.sh/blog/cloudflare-pages-free-tier-limits-2026">Cloudflare Pages 무료 한도</a> · <a href="https://developers.cloudflare.com/changelog/post/2026-01-23-pages-file-limit-increase/">Pages 파일 수 한도</a> · <a href="https://claude.com/pricing">Claude 플랜</a> · <a href="https://code.claude.com/docs/en/costs">Claude Code 사용량</a></td></tr>
         <tr><th>법무</th><td><a href="https://www.taxwatch.co.kr/article/tax/2020/06/26/0001">경품 제세공과금</a> · <a href="https://www.segye.com/newsView/20250611516170">테무 과징금</a> · <a href="https://newstomato.com/ReadNews.aspx?no=744860">홈플러스 경품 개인정보</a> · <a href="https://www.ajunews.com/view/20251202085042877">추천보증 심사지침</a> · <a href="https://www.kocca.kr/n_content/vol24/subp/issue_hotTrend3.html">퍼블리시티권</a></td></tr>
       </tbody>
     </table>
@@ -809,7 +1092,7 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
       '<p class="cert-desc">' + t.desc + " " + GRADE_TXT[g] + "</p>" +
       '<div class="cert-pair"><div><b>같은 불판 추천</b>' + T[t.best].name + " · " + t.bestWhy + "</div><div><b>같은 불판 금지</b>" + T[t.worst].name + " · " + t.worstWhy + "</div></div>" +
       (r.trust ? '<p class="cert-trust">판정 신뢰도: ' + r.trust + "</p>" : "") +
-      '<div class="cert-foot"><span>맛있는울산 인성 등급판정소</span><span>재미로 만든 판정입니다</span></div>';
+      '<div class="cert-foot"><span>인성 등급판정소 · 제작 맛있는울산</span><span>재미로 만든 판정입니다</span></div>';
   }
 
   /* ── 기획서 표 채우기 (데모와 같은 데이터) ── */
@@ -850,7 +1133,7 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
 
   function intro() {
     state = { i: 0, picks: [] }; setBar(0);
-    body.innerHTML = '<p class="eyebrow">맛있는울산 · 밥상머리에서 다 보입니다</p>' +
+    body.innerHTML = '<p class="eyebrow">인성 등급판정소 · 밥상머리에서 다 보입니다</p>' +
       '<p class="demo-title">당신의 인성,<br>몇 등급입니까?</p>' +
       '<p class="small muted">소고기 등급판정 기준 그대로. 다섯 항목 중 가장 낮은 등급이 최종 등급입니다. 문항 11개, 2분이면 끝.</p>' +
       '<button class="btn primary" id="startBtn" type="button">판정받기</button>' +
@@ -906,6 +1189,47 @@ textarea.copybox { width: 100%; font: inherit; font-size: 13px; padding: 8px; bo
   }
 
   intro();
+
+  /* ── 수익 계산기 ── */
+  var PRESET = {
+    low:  { c_comp: 70, c_pv: 1.5, c_rpm1: 300,  c_rpm2: 100, c_ctr: 0.5, c_conv: 1, c_aov: 20000, c_rate: 1 },
+    base: { c_comp: 90, c_pv: 2.5, c_rpm1: 800,  c_rpm2: 300, c_ctr: 1.5, c_conv: 3, c_aov: 30000, c_rate: 3 },
+    high: { c_comp: 90, c_pv: 4,   c_rpm1: 1500, c_rpm2: 600, c_ctr: 3,   c_conv: 5, c_aov: 45000, c_rate: 3 }
+  };
+  function v(id) { var n = parseFloat(document.getElementById(id).value); return isFinite(n) && n > 0 ? n : 0; }
+  function won(n) {
+    if (n >= 10000) return "약 " + (Math.round(n / 1000) / 10).toLocaleString("ko-KR") + "만 원";
+    return Math.round(n).toLocaleString("ko-KR") + "원";
+  }
+  function calc() {
+    var sess = v("c_sess"), pv = v("c_pv");
+    var ads = sess * pv * v("c_rpm1") / 1000;
+    var fit = sess * pv * v("c_rpm2") / 1000;
+    var cp = sess * v("c_comp") / 100 * v("c_ctr") / 100 * v("c_conv") / 100 * v("c_aov") * v("c_rate") / 100;
+    var tot = ads + fit + cp;
+    document.getElementById("o_ads").textContent = won(ads);
+    document.getElementById("o_fit").textContent = won(fit);
+    document.getElementById("o_cp").textContent = won(cp);
+    document.getElementById("o_tot").textContent = won(tot);
+    document.getElementById("o_per").textContent = sess ? (tot / sess).toFixed(2) + "원" : "-";
+  }
+  var calcEl = document.getElementById("calc");
+  Array.prototype.forEach.call(calcEl.querySelectorAll("input"), function (i) { i.addEventListener("input", function () {
+    Array.prototype.forEach.call(calcEl.querySelectorAll("[data-preset]"), function (b) { b.setAttribute("aria-pressed", "false"); });
+    calc();
+  }); });
+  Array.prototype.forEach.call(calcEl.querySelectorAll("[data-preset]"), function (b) {
+    b.addEventListener("click", function () {
+      var pr = PRESET[b.getAttribute("data-preset")];
+      Object.keys(pr).forEach(function (k) { document.getElementById(k).value = pr[k]; });
+      Array.prototype.forEach.call(calcEl.querySelectorAll("[data-preset]"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      calc();
+    });
+  });
+  Array.prototype.forEach.call(calcEl.querySelectorAll("[data-sess]"), function (b) {
+    b.addEventListener("click", function () { document.getElementById("c_sess").value = b.getAttribute("data-sess"); calc(); });
+  });
+  calc();
 })();
 </script>
 </body>
